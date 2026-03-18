@@ -70,4 +70,16 @@ export class HistoryMaintenanceService {
       relations: ['project', 'maintenance', 'maintenance.maintenanceActions'],
     })
   }
+
+  async remove (id: number) {
+    const maintenances = await this.maintenance.find({
+      where: { historyMaintenance: { id: id } }
+    })
+    
+    if (maintenances.length > 0) {
+      await this.maintenance.remove(maintenances)
+    }
+
+    return this.historyMaintenance.delete(id)
+  }
 }

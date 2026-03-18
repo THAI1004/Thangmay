@@ -362,10 +362,33 @@ async findAllByLocaltion(localtionName: string) {
     }
   }
 
-  findAllProjectsMaintennce() {
+  findAllProjectsMaintenanceFree() {
+    const toDay = new Date()
     return this.projectRepository.find({
-      where: { type: 'BAOTRI' },
-      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff'],
+      where: {
+        type: 'BAOTRI',
+        historyMaintenance: {
+          timeStart: LessThan(toDay),
+          timeEnd: MoreThan(toDay),
+          free: true,
+        },
+      },
+      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff', 'historyMaintenance'],
+    })
+  }
+
+  findAllProjectsMaintennce() {
+    const toDay = new Date();
+    return this.projectRepository.find({
+      where: {
+        type: 'BAOTRI',
+        historyMaintenance: {
+          timeStart: LessThan(toDay),
+          timeEnd: MoreThan(toDay),
+          free: false,
+        },
+      },
+      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff', 'historyMaintenance'],
     })
   }
 
@@ -397,7 +420,8 @@ async findAllByLocaltion(localtionName: string) {
       })
     }
   }
-  findProjectsMaintennceByStaffId(staffId: number) {
+  findProjectsMaintenanceFreeByStaffId(staffId: number) {
+    const toDay = new Date()
     return this.projectRepository.find({
       where: {
         type: 'BAOTRI',
@@ -406,8 +430,33 @@ async findAllByLocaltion(localtionName: string) {
             id: staffId,
           },
         },
+        historyMaintenance: {
+          timeStart: LessThan(toDay),
+          timeEnd: MoreThan(toDay),
+          free: true,
+        },
       },
-      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff'],
+      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff', 'historyMaintenance'],
+    })
+  }
+
+  findProjectsMaintennceByStaffId(staffId: number) {
+    const toDay = new Date();
+    return this.projectRepository.find({
+      where: {
+        type: 'BAOTRI',
+        projectStaff: {
+          staff: {
+            id: staffId,
+          },
+        },
+        historyMaintenance: {
+          timeStart: LessThan(toDay),
+          timeEnd: MoreThan(toDay),
+          free: false,
+        },
+      },
+      relations: ['projectStaff', 'projectStaff.staff', 'projectSteps', 'projectSteps.staff', 'historyMaintenance'],
     })
   }
 

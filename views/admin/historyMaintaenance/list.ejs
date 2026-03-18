@@ -32,6 +32,7 @@
                 <th class="text-900 sort" data-sort="countMaintenance2">Số lịch cần đặt còn lại</th>
                 <th class="text-900 sort" data-sort="free">Loại phí</th>
                 <th class="text-900 sort" data-sort="price">Phí bảo trì</th>
+                <th class="text-900 text-center">Tương tác</th>
               </tr>
             </thead>
             <tbody class="list">
@@ -62,6 +63,12 @@
                         <%= value.price %>
                       </span>
                       <%=new Intl.NumberFormat('vi-VN', { style: 'currency' , currency: 'VND' }).format(value.price)%>
+                    </td>
+                    <td class="action text-center">
+                      <button type="button" class="btn btn-danger btn-sm delete-history-btn" data-id="<%= value.id %>"
+                        data-toggle="tooltip" data-placement="top" title="Xóa">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
                     </td>
                   </tr>
                   <% }); %>
@@ -167,5 +174,52 @@
       input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
       document.getElementById('price_value').value = value;
     }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Use event delegation for dynamically updating tables
+      document.body.addEventListener('click', function (e) {
+        // Find if a delete-history-btn was clicked
+        const btn = e.target.closest('.delete-history-btn');
+        if (btn) {
+          const id = btn.getAttribute('data-id');
+          Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Hành động này sẽ xóa lịch sử gia hạn và lịch bảo trì đi kèm!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Đồng ý, xóa!',
+            cancelButtonText: 'Hủy'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/history-maintenance/${id}`, {
+                method: 'DELETE',
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  Swal.fire(
+                    'Đã xóa!',
+                    data.message,
+                    'success'
+                  ).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire('Lỗi!', data.message || 'Xóa thất bại', 'error');
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa.', 'error');
+              });
+            }
+          });
+        }
+      });
+    });
   </script>
   <%- include('../../layout/footer') %>

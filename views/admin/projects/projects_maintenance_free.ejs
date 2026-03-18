@@ -1,0 +1,174 @@
+<%- include('../../layout/header') %>
+  <div class="card p-4">
+    <div class="tab-pane preview-tab-pane active" role="tabpanel"
+      aria-labelledby="tab-dom-da4be276-f13c-47d6-be82-655bc6452fd5" id="dom-da4be276-f13c-47d6-be82-655bc6452fd5">
+      <h4 class="mt-3">Danh sách công trình bảo trì không thu phí</h4>
+      <div id="tableExample3"
+        data-list='{"valueNames":["stt","duan","phone","address","ttBaoTri","action"],"page":20,"pagination":true}'>
+        <div class="m-b-30">
+          <a href="/project/add/maintenance" type="button" class="btn btn-primary thead-backgroup" id="add-new-project">
+            <i class="fas fa-plus-square"></i>&nbsp; Thêm mới</a>
+        </div>
+        <div class="row justify-content-end g-0">
+          <div class="col-auto col-sm-5 mb-3">
+            <form>
+              <div class="input-group">
+                <input class="form-control form-control-sm shadow-none search" type="search" placeholder="Search..."
+                  aria-label="search" />
+                <div class="input-group-text bg-transparent"><span class="fa fa-search fs-10 text-600"></span></div>
+              </div>
+            </form>
+            <h6 style="margin-top:10px ;" id="countSearch"></h6>
+          </div>
+        </div>
+        <div class="table-responsive scrollbar">
+          <table class="table table-bordered table-hover table-striped fs-10 mb-0">
+            <thead class="bg-200">
+              <tr>
+                <th class="text-900 sort" data-sort="stt">STT</th>
+                <th class="text-900 sort" data-sort="duan">Mã</th>
+                <th class="text-900 sort" data-sort="duan">Công trình</th>
+                <th class="text-900 sort" data-sort="phone">Số điện thoại</th>
+                <th class="text-900 sort" data-sort="address">Địa chỉ</th>
+                <th class="text-900 sort" data-sort="ttBaoTri">Loại bảo trì</th>
+                <th class="text-900 sort" data-sort="action">Tương tác</th>
+              </tr>
+            </thead>
+            <tbody class="list">
+              <% if (projects && projects.length > 0) { %>
+                <% stt=0; %>
+                <% projects.forEach(function(project, key) { let totalSteps=project.projectSteps.length -
+                  project.projectSteps.filter(step=> step.staff == null).length; let
+                  stepsWithStatus =
+                  project.projectSteps.filter(step => step.status != null).length; let
+                  percentageComplete = totalSteps > 0 ?
+                  (stepsWithStatus / totalSteps) * 100 : 0; %>
+                  <tr data-id="<%= project.id %>" data-name="<%= project.name %>"
+                    data-description="<%= project.description %>">
+                    <td class="stt">
+                      <%= stt +=1 %>
+                    </td>
+                    <td class="duan">
+                      <%= project.code_project %>
+                    </td>
+                    <td class="duan">
+                      <%= project.full_name %>
+                    </td>
+                    <td class="phone">
+                      <%= project.number_phone %>
+                    </td>
+                    <td class="address">
+                      <%= project.address %>
+                    </td>
+                    <td class="ttBaoTri">Miễn phí</td>
+                    <td class="action">
+                      <div class="table-data-feature d-flex">
+                        <a href="/project/maintenance/<%= project.id %>" class="item edit-btn btn-primary m-1"
+                          data-toggle="tooltip" data-placement="top" title="Chỉnh sửa">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="/maintenance/project/<%= project.id %>" class="item m-1" style=" color: black; border: none;"
+                          data-toggle="tooltip" data-placement="top" title="Bảo trì">
+                          <i class="fas fa-wrench"></i>
+                        </a>
+                        <button type="button" class="item delete-project-btn btn-danger m-1" data-id="<%= project.id %>"
+                          data-toggle="tooltip" data-placement="top" title="Xóa">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="7" class="text-center py-4">
+                    <div class="text-muted">
+                      <i class="fas fa-inbox fa-2x mb-2"></i>
+                      <p class="mb-0">Chưa có dữ liệu</p>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+            <span class="fas fa-chevron-left"></span>
+          </button>
+          <ul class="pagination mb-0"></ul>
+          <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+            <span class="fas fa-chevron-right"> </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const inputSearch = document.querySelector('.search')
+    const table = document.querySelector('tbody');
+    const observer = new MutationObserver(function (mutationsList, observer) {
+      if (inputSearch.value !== '') {
+        const rowsTable = document.querySelectorAll('.stt')
+        document.querySelector('#countSearch').innerHTML = `Tổng có: ${rowsTable.length}`
+      } else {
+        document.querySelector('#countSearch').innerHTML = ``
+      }
+    });
+
+    observer.observe(table, {
+      childList: true, // theo dõi thêm/xóa node con
+      attributes: true, // theo dõi thuộc tính thay đổi
+      characterData: true, // theo dõi textNode thay đổi
+      subtree: true // theo dõi tất cả phần tử con
+    });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Use event delegation for dynamically updating tables
+      document.body.addEventListener('click', function (e) {
+        // Find if a delete-project-btn was clicked
+        const btn = e.target.closest('.delete-project-btn');
+        if (btn) {
+          const id = btn.getAttribute('data-id');
+          Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Hành động này sẽ xóa công trình và tất cả các lần bảo trì liên quan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Đồng ý, xóa!',
+            cancelButtonText: 'Hủy'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/project/maintenance/${id}`, {
+                method: 'DELETE',
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  Swal.fire(
+                    'Đã xóa!',
+                    data.message,
+                    'success'
+                  ).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire('Lỗi!', data.message || 'Xóa thất bại', 'error');
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa.', 'error');
+              });
+            }
+          });
+        }
+      });
+    });
+  </script>
+  <%- include('../../layout/footer') %>

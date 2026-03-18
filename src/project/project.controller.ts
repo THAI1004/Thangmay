@@ -590,6 +590,25 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     }
   }
 
+  @Get('/maintenance-free')
+  @Render('admin/projects/projects_maintenance_free')
+  async filterProjectsMaintenanceFree(@Req() req: Request) {
+    const token = req.cookies['token']
+    const payload = await this.staffsService.payload(token)
+    const inforAccount = await this.staffsService.findOne(payload.id)
+    let projects = null
+    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1)) {
+      projects = await this.projectService.findAllProjectsMaintenanceFree()
+    } else {
+      projects = await this.projectService.findProjectsMaintenanceFreeByStaffId(inforAccount.id)
+    }
+    return {
+      projects,
+      activeMenu: 'project/maintenance-free',
+    }
+  }
+
+
   @Delete('/maintenance/:id')
   async removeMaintenanceProject(@Param('id') id: string, @Res() res: Response) {
     try {

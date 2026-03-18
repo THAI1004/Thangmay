@@ -26,4 +26,15 @@ export class HistoryMaintenanceController {
     const listHistory = await this.historyMaintenanceService.findByProject(idProject)
     return {listHistory, project, activeMenu: 'historyMaintaenance/list'}
   }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    try {
+      await this.historyMaintenanceService.remove(+id)
+      return res.status(200).json({ status: 'success', message: 'Xóa lịch sử gia hạn bảo trì thành công' })
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({ status: 'error', message: 'Xóa thất bại' })
+    }
+  }
 }

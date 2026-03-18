@@ -391,7 +391,7 @@
       </ul>
     </div>
 </nav>
-<nav class="navbar navbar-light navbar-vertical navbar-expand-xl navbar-card" style="display: none;">
+<nav class="navbar navbar-dark  navbar-vertical navbar-expand-xl navbar-card" style="display: none;">
   <script>
     var navbarStyle = localStorage.getItem("navbarStyle");
     if (navbarStyle && navbarStyle !== 'transparent') {
@@ -409,11 +409,11 @@
     </a>
   </div>
   <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
-    <div class="navbar-vertical-content scrollbar">
+    <div class="navbar-vertical-content bg-dark text-white scrollbar">
       <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav">
-        <li class="nav-item">
+        <li class="nav-item text-white">
           <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-            <div class="col-auto navbar-vertical-label">Trang chủ</div>
+            <div class="col-auto navbar-vertical-label text-white">Trang chủ</div>
             <div class="col ps-0">
               <hr class="mb-0 navbar-vertical-divider" />
             </div>
@@ -435,8 +435,8 @@
                     <li>
                       <a class="nav-link <%= activeMenu === 'VIEW_DASHBOARD' ? 'active' : '' %>" href="/" role="button">
                         <div class="d-flex align-items-center ">
-                          <span class="nav-link-icon"><i class="fa-solid fa-house"></i></span>
-                          <span class="nav-link-text ps-1"> Trang chủ</span>
+                          <span class="nav-link-icon text-white"><i class="fa-solid fa-house"></i></span>
+                          <span class="nav-link-text ps-1 text-white"> Trang chủ</span>
                         </div>
                       </a>
                     </li>
@@ -446,8 +446,8 @@
                           <a class="nav-link <%= activeMenu === 'VIEW_ASSIGNED_PROJECTS' ? 'active' : '' %>"
                             href="/client/list-project-responsibility" role="button">
                             <div class="d-flex align-items-center">
-                              <span class="nav-link-icon"><i class="fa-solid fa-briefcase"></i></span>
-                              <span class="nav-link-text ps-1">Công trình phụ trách</span>
+                              <span class="nav-link-icon text-white"><i class="fa-solid fa-briefcase"></i></span>
+                              <span class="nav-link-text ps-1 text-white">Công trình phụ trách</span>
                             </div>
                           </a>
                         </li>
@@ -457,8 +457,8 @@
                               <a class="nav-link <%= activeMenu === 'VIEW_PROJECT_STATISTICS' ? 'active' : '' %>"
                                 href="/project/statistical" role="button">
                                 <div class="d-flex align-items-center">
-                                  <span class="nav-link-icon"><i class="fa-solid fa-chart-column"></i></span>
-                                  <span class="nav-link-text ps-1">Thống kê công trình</span>
+                                  <span class="nav-link-icon text-white"><i class="fa-solid fa-chart-column"></i></span>
+                                  <span class="nav-link-text ps-1 text-white">Thống kê công trình</span>
                                 </div>
                               </a>
                             </li>
@@ -468,8 +468,8 @@
                                   <a class="nav-link <%= activeMenu === 'VIEW_MAINTENANCE_STATISTICS' ? 'active' : '' %>"
                                     href="/maintenance" role="button">
                                     <div class="d-flex align-items-center">
-                                      <span class="nav-link-icon"><i class="fa-solid fa-chart-line"></i></span>
-                                      <span class="nav-link-text ps-1">Thống kê bảo trì theo tháng</span>
+                                      <span class="nav-link-icon text-white"><i class="fa-solid fa-chart-line"></i></span>
+                                      <span class="nav-link-text ps-1 text-white">Thống kê bảo trì theo tháng</span>
                                     </div>
                                   </a>
                                 </li>
@@ -480,7 +480,7 @@
           permisionArr.includes('MANAGE_STAFF')) { %>
           <li class="nav-item">
             <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-              <div class="col-auto navbar-vertical-label">Nhân sự</div>
+              <div class="col-auto navbar-vertical-label text-white">Nhân sự</div>
               <div class="col ps-0">
                 <hr class="mb-0 navbar-vertical-divider" />
               </div>
@@ -491,8 +491,8 @@
                   <a class="nav-link <%= activeMenu === 'VIEW_DEPARTMENTS' ? 'active' : '' %>" href="/departmens"
                     role="button">
                     <div class="d-flex align-items-center">
-                      <span class="nav-link-icon"><i class="fa-solid fa-building"></i></span>
-                      <span class="nav-link-text ps-1">Phòng ban</span>
+                      <span class="nav-link-icon text-white"><i class="fa-solid fa-building"></i></span>
+                      <span class="nav-link-text ps-1 text-white">Phòng ban</span>
                     </div>
                   </a>
                 </li>
@@ -502,8 +502,8 @@
                       <a class="nav-link <%= activeMenu === 'VIEW_POSITIONS' ? 'active' : '' %>" href="/positions"
                         role="button">
                         <div class="d-flex align-items-center">
-                          <span class="nav-link-icon"><i class="fa-solid fa-medal"></i></span>
-                          <span class="nav-link-text ps-1">Chức vụ</span>
+                          <span class="nav-link-icon text-white"><i class="fa-solid fa-medal"></i></span>
+                          <span class="nav-link-text ps-1 text-white">Chức vụ</span>
                         </div>
                       </a>
                     </li>
@@ -513,8 +513,8 @@
                           <a class="nav-link <%= activeMenu === 'MANAGE_STAFF' ? 'active' : ''  %>" href="/staffs"
                             role="button">
                             <div class="d-flex align-items-center">
-                              <span class="nav-link-icon"><i class="fa-solid fa-users"></i></span>
-                              <span class="nav-link-text ps-1">Nhân viên</span>
+                              <span class="nav-link-icon text-white"><i class="fa-solid fa-users"></i></span>
+                              <span class="nav-link-text ps-1 text-white">Nhân viên</span>
                             </div>
                           </a>
                         </li>
@@ -525,7 +525,7 @@
             <% if (permisionArr.includes('MANAGE_WORKFLOWS')) { %>
               <li class="nav-item">
                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                  <div class="col-auto navbar-vertical-label">Quy trình</div>
+                  <div class="col-auto navbar-vertical-label text-white">Quy trình</div>
                   <div class="col ps-0">
                     <hr class="mb-0 navbar-vertical-divider" />
                   </div>
@@ -535,8 +535,8 @@
                     <a class="nav-link <%= activeMenu === 'MANAGE_WORKFLOWS' ? 'active' : '' %>" href="/workflows"
                       role="button">
                       <div class="d-flex align-items-center">
-                        <span class="nav-link-icon"><i class="fa-solid fa-network-wired"></i></span>
-                        <span class="nav-link-text ps-1">Quy trình</span>
+                        <span class="nav-link-icon text-white"><i class="fa-solid fa-network-wired"></i></span>
+                        <span class="nav-link-text ps-1 text-white">Quy trình</span>
                       </div>
                     </a>
                   </li>
@@ -547,7 +547,7 @@
                   { %>
                   <li class="nav-item">
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                      <div class="col-auto navbar-vertical-label">Quản lý kinh doanh</div>
+                      <div class="col-auto navbar-vertical-label text-white">Quản lý kinh doanh</div>
                       <div class="col ps-0">
                         <hr class="mb-0 navbar-vertical-divider" />
                       </div>
@@ -557,8 +557,8 @@
                         <li>
                           <a class="nav-link" href="/customer/infor" role="button">
                             <div class="d-flex align-items-center">
-                              <span class="nav-link-icon"><i class="fa-solid fa-table-cells-large"></i></span>
-                              <span class="nav-link-text ps-1">Danh sách công trình dự kiến</span>
+                              <span class="nav-link-icon text-white"><i class="fa-solid fa-table-cells-large"></i></span>
+                              <span class="nav-link-text ps-1 text-white">Danh sách công trình dự kiến</span>
                             </div>
                           </a>
                         </li>
@@ -567,16 +567,16 @@
                             <li>
                               <a class="nav-link" href="/staffs/busines" role="button">
                                 <div class="d-flex align-items-center">
-                                  <span class="nav-link-icon"><i class="fa-solid fa-user-tie"></i></span>
-                                  <span class="nav-link-text ps-1">Quản lý nhân viên kinh doanh</span>
+                                  <span class="nav-link-icon text-white"><i class="fa-solid fa-user-tie"></i></span>
+                                  <span class="nav-link-text ps-1 text-white">Quản lý nhân viên kinh doanh</span>
                                 </div>
                               </a>
                             </li>
                             <li>
                               <a class="nav-link" href="/staffs/payroll" role="button">
                                 <div class="d-flex align-items-center">
-                                  <span class="nav-link-icon"><i class="fa-solid fa-money-check-dollar"></i></span>
-                                  <span class="nav-link-text ps-1">Bảng công</span>
+                                  <span class="nav-link-icon text-white"><i class="fa-solid fa-money-check-dollar"></i></span>
+                                  <span class="nav-link-text ps-1 text-white">Bảng công</span>
                                 </div>
                               </a>
                             </li>
@@ -587,7 +587,7 @@
                     <% if (permisionArr.includes('MANAGE_PROJECTS')) { %>
                       <li class="nav-item">
                         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                          <div class="col-auto navbar-vertical-label">Công trình lắp đặt</div>
+                          <div class="col-auto navbar-vertical-label text-white">Công trình lắp đặt</div>
                           <div class="col ps-0">
                             <hr class="mb-0 navbar-vertical-divider" />
                           </div>
@@ -596,8 +596,8 @@
                           <li>
                             <a class="nav-link" href="/project/trang-thai/tat-ca" role="button">
                               <div class="d-flex align-items-center">
-                                <span class="nav-link-icon"><i class="fa-solid fa-building-wheat"></i></span>
-                                <span class="nav-link-text ps-1">Danh sách công trình</span>
+                                <span class="nav-link-icon text-white"><i class="fa-solid fa-building-wheat"></i></span>
+                                <span class="nav-link-text ps-1 text-white">Danh sách công trình</span>
                               </div>
                             </a>
                           </li>
@@ -607,7 +607,7 @@
                         <% if (permisionArr.includes('MANAGE_MAINTENANCE')) { %>
                           <li class="nav-item">
                             <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                              <div class="col-auto navbar-vertical-label">Bảo trì</div>
+                              <div class="col-auto navbar-vertical-label text-white">Bảo trì</div>
                               <div class="col ps-0">
                                 <hr class="mb-0 navbar-vertical-divider" />
                               </div>
@@ -616,16 +616,24 @@
                               <li>
                                 <a class="nav-link" href="/project/maintenance" role="button">
                                   <div class="d-flex align-items-center">
-                                    <span class="nav-link-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
-                                    <span class="nav-link-text ps-1">Tổng hợp danh sách bảo trì có thu phí</span>
+                                    <span class="nav-link-icon text-white"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                    <span class="nav-link-text ps-1 text-white">Tổng hợp danh sách bảo trì có thu phí</span>
+                                  </div>
+                                </a>
+                              </li>
+                              <li>
+                                <a class="nav-link" href="/project/maintenance-free" role="button">
+                                  <div class="d-flex align-items-center">
+                                    <span class="nav-link-icon text-white"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                    <span class="nav-link-text ps-1 text-white">Tổng hợp danh sách bảo trì không thu phí</span>
                                   </div>
                                 </a>
                               </li>
                               <li>
                                 <a class="nav-link" href="/maintenance/classify" role="button">
                                   <div class="d-flex align-items-center">
-                                    <span class="nav-link-icon"><i class="fa-regular fa-file-lines"></i></span>
-                                    <span class="nav-link-text ps-1">Tổng hợp danh sách bảo trì</span>
+                                    <span class="nav-link-icon text-white"><i class="fa-regular fa-file-lines"></i></span>
+                                    <span class="nav-link-text ps-1 text-white">Tổng hợp danh sách bảo trì</span>
                                   </div>
                                 </a>
                               </li>
@@ -635,15 +643,15 @@
                             <% } %>
                               <li class="nav-item">
                                 <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
-                                  <div class="col-auto navbar-vertical-label">Quy trình làm việc</div>
+                                  <div class="col-auto navbar-vertical-label text-white">Quy trình làm việc</div>
                                   <div class="col ps-0">
                                     <hr class="mb-0 navbar-vertical-divider" />
                                   </div>
                                 </div>
                                 <a class="nav-link <%= activeMenu === 'quytrinhmau' ? 'active' : '' %>" href="/quy-trinh-lam-viec" role="button">
                                   <div class="d-flex align-items-center">
-                                    <span class="nav-link-icon"><i class="fa-regular fa-calendar-check"></i></span>
-                                    <span class="nav-link-text ps-1">Quy trình làm việc</span>
+                                    <span class="nav-link-icon text-white"><i class="fa-regular fa-calendar-check"></i></span>
+                                    <span class="nav-link-text ps-1 text-white">Quy trình làm việc</span>
                                   </div>
                                 </a>
                               </li>
@@ -651,7 +659,7 @@
     </div>
   </div>
 </nav>
-<nav class="navbar navbar-light navbar-glass navbar-top navbar-expand-lg navbar-card" style="display: none;">
+<nav class="navbar navbar-dark bg-dark navbar-glass navbar-top navbar-expand-lg navbar-card" style="display: none;">
   <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse"
     data-bs-target="#navbarStandard" aria-controls="navbarStandard" aria-expanded="false"
     aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
