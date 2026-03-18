@@ -194,4 +194,8 @@ export class MaintenanceService {
   ConfirmDelete(id: number) {
     return this.maintenanceRepository.delete(id)
   }
+
+  async updateActualDate(id: number, actualDate: string | null) {
+    return this.maintenanceRepository.update(id, { actualDate: actualDate as any })
+  }
 }

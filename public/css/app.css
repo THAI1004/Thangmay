@@ -9,3 +9,9 @@ li {
 h4 {
   font-weight: bolder;
 }
+td{
+  font-weight: 900;
+}
+input{
+  font-weight: 900;
+}

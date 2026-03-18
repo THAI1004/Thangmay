@@ -14,13 +14,13 @@ export class ProjectStaffController {
   async findBusinesDeatil(@Param('idStaff') id: string) {
     const dealineBusines = await this.targetBusinesService.findAllWStaff(+id)
     const staffsBusines = await this.projectStaffService.findProjectStaffByMonth(+id)
-    return {staffsBusines: staffsBusines.monthlyDetails, dealineBusines, staffId: id}
+    return {staffsBusines: staffsBusines.monthlyDetails, dealineBusines, staffId: id, activeMenu: 'staffs/business'}
   }
   @Get()
   @Render('admin/staff/business')
   async findAllList() {
     const staffsBusiness = await this.projectStaffService.findAllList()
-    return {staffsBusiness}
+    return {staffsBusiness, activeMenu: 'staffs/business'}
   }
 
   @Delete(':id')

@@ -125,6 +125,28 @@ export class MaintenanceController {
     await this.maintenanceActionsService.updateConfirmSuccess(+numericId)
     return res.status(200).json({success: true, message: 'Success'})
   }
+
+  @Patch('actual-date/:id')
+  async updateActualDate (
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Req() req: Request
+  ) {
+    try {
+      const actualDate = req.body.actualDate;
+      console.log(`[DEBUG] updateActualDate Hit! ID: ${id}, actualDate: "${actualDate}"`, typeof actualDate);
+      const numericId = parseInt(id, 10)
+      const dateString = actualDate ? actualDate : null;
+      
+      const updateRes = await this.maintenanceService.updateActualDate(numericId, dateString)
+      console.log(`[DEBUG] updateActualDate typeorm result:`, updateRes);
+      
+      return res.status(200).json({success: true, message: 'Cập nhật ngày bảo trì thực tế thành công'})
+    } catch (error) {
+      console.error(`[DEBUG] Error in updateActualDate:`, error);
+      return res.status(500).json({success: false, message: 'Lỗi máy chủ'})
+    }
+  }
   @Post()
   async create (@Res() res: Response, @Body() createMaintenanceDto: CreateMaintenanceDto) {
     createMaintenanceDto.fee = String(createMaintenanceDto.fee) === '1' ? true : false
@@ -148,7 +170,7 @@ export class MaintenanceController {
       projects = await this.projectService.findAllByBusines(inforAccount.id)
     }
     const staffs = await this.staffsService.findAll()
-    return {maintenanceWProjects, staffs, projects}
+    return {maintenanceWProjects, staffs, projects, activeMenu: 'maintenance'}
   }
   @Get('project/:idProject')
   @Render('admin/maintenance/maintenance_w_project')
@@ -157,7 +179,7 @@ export class MaintenanceController {
     const staffs = await this.staffsService.findAll()
     const project = await this.projectService.findOne(+idProject)
     const historyMaintenance = await this.historyMaintenanceService.findByProjectNow(+idProject)
-    return {historyMaintenance, staffs, project, maintenanceWProjects, }
+    return {historyMaintenance, staffs, project, maintenanceWProjects, activeMenu: 'maintenance'}
   }
   @Post('project/:idProject')
   @Render('admin/maintenance/maintenance_w_project')
@@ -200,7 +222,7 @@ export class MaintenanceController {
   @Render('admin/maintenance/classify')
   async classify(){
     const project = await this.projectService.findAllProject()
-    return {project}
+    return {project, activeMenu: 'maintenance/classify'}
   }
 
 }

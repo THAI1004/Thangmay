@@ -115,6 +115,12 @@
        url('../fonts/poppins/poppins-v5-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
        url('../fonts/poppins/poppins-v5-latin-500.svg#Poppins') format('svg'); /* Legacy iOS */
 }
+td{
+  font-weight: 900;
+}
+input{
+  font-weight: 900;
+}
 /* poppins-500italic - latin */
 @font-face {
   font-family: 'Poppins';

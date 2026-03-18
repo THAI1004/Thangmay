@@ -44,6 +44,7 @@ export class CustomerController {
       customers,
       departments,
       staffs,
+      activeMenu: 'customer/add',
     }
   }
   @SetMetadata('permision', 'MANAGE_PLANNED_PROJECTS')
@@ -51,7 +52,7 @@ export class CustomerController {
   @Render('admin/customer/infor')
   async findAll() {
     const customers = await this.customerService.findAll()
-    return {customers}
+    return {customers, activeMenu: 'customer/infor'}
   }
 
   @Get(':id')
@@ -72,6 +73,7 @@ export class CustomerController {
       customer,
       departments,
       staffs,
+      activeMenu: 'customer',
     }
   }
 

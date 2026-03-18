@@ -85,6 +85,7 @@ export class AppController {
       maintenanceYc,
       maintenanceYcHt,
       countProject,
+      activeMenu: 'VIEW_DASHBOARD',
     }
   }
 
@@ -92,13 +93,13 @@ export class AppController {
   @SetMetadata('isPublic', true)
   @Render('login')
   loginRender () {
-    return {}
+    return {activeMenu: 'login'}
   }
   @Get('/logout')
   @Render('login')
   logout (@Res() res: Response) {
     res.clearCookie('token')
-    return {message: 'Đăng xuất thành công!', status: 'success'}
+    return {message: 'Đăng xuất thành công!', status: 'success', activeMenu: 'login'}
   }
   @Post('login')
   @SetMetadata('isPublic', true)

@@ -36,7 +36,7 @@ export class SendMailService {
         .header h1 {
           margin: 0;
           font-size: 30px;
-          font-weight: 700;
+          font-weight: 900;
         }
         .content {
           text-align: center;
@@ -52,7 +52,7 @@ export class SendMailService {
         }
         .content .password {
           font-size: 20px;
-          font-weight: bold;
+          font-weight: 900;
           color: #007bff;
           margin: 20px 0;
           padding: 10px;
@@ -144,7 +144,7 @@ export class SendMailService {
         .header h1 {
           margin: 0;
           font-size: 30px;
-          font-weight: 700;
+          font-weight: 900;
         }
         .content {
           text-align: center;
@@ -160,7 +160,7 @@ export class SendMailService {
         }
         .content .password {
           font-size: 20px;
-          font-weight: bold;
+          font-weight: 900;
           color: #007bff;
           margin: 20px 0;
           padding: 10px;
@@ -249,7 +249,7 @@ export class SendMailService {
         .header h1 {
           margin: 0;
           font-size: 30px;
-          font-weight: 700;
+          font-weight: 900;
         }
         .content {
           text-align: center;
@@ -265,7 +265,7 @@ export class SendMailService {
         }
         .content .password {
           font-size: 20px;
-          font-weight: bold;
+          font-weight: 900;
           color: #007bff;
           margin: 20px 0;
           padding: 10px;
@@ -348,7 +348,7 @@ export class SendMailService {
   .header h1 {
     margin: 0;
     font-size: 30px;
-    font-weight: 700;
+    font-weight: 900;
   }
   .content {
     text-align: center;
@@ -363,7 +363,7 @@ export class SendMailService {
   }
   .content .password {
     font-size: 20px;
-    font-weight: bold;
+    font-weight: 900;
     color: #333333; /* Màu xám đậm */
     margin: 20px 0;
     padding: 10px;
@@ -453,7 +453,7 @@ export class SendMailService {
         .header h1 {
           margin: 0;
           font-size: 30px;
-          font-weight: 700;
+          font-weight: 900;
         }
         .content {
           text-align: center;
@@ -469,7 +469,7 @@ export class SendMailService {
         }
         .content .password {
           font-size: 20px;
-          font-weight: bold;
+          font-weight: 900;
           color: #007bff;
           margin: 20px 0;
           padding: 10px;
@@ -560,7 +560,7 @@ export class SendMailService {
         .header h1 {
           margin: 0;
           font-size: 26px;
-          font-weight: bold;
+          font-weight: 900;
         }
         .content {
           text-align: center;

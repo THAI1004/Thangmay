@@ -37,6 +37,8 @@ export class Maintenance {
   // confirmSuccess: boolean
   @Column()
   reason: string
+  @Column({type: 'date', nullable: true})
+  actualDate: Date
   @Column({default: true})
   fee: boolean
   @Column({nullable: true})

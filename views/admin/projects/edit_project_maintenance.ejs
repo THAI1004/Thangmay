@@ -246,7 +246,7 @@
         aria-label="Recipient's username" aria-describedby="button-addon2" oninput="filterList2(this)">
       <ul style="position: absolute;" class="card item-list">
         <% staffs.forEach(function(staff) { %>
-        <li class="btn w-100 infor-staff" idDepartment="<%=staff.department.id%>"
+        <li class="btn w-100 infor-staff" idDepartment="<%= staff.department ? staff.department.id : '' %>"
           onclick="selectStaff(this, '<%=staff.full_name%>', '<%=staff.id%>')">
           <%=staff.full_name%> - <%=staff.number_phone%>
         </li>

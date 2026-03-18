@@ -47,9 +47,14 @@ Notes:	decreasing heading by 0.4em with every subsequent heading level
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
+td{
+  font-weight: 900;
+}
 ul {
   margin: 0;
+}
+input{
+  font-weight: 900;
 }
 
 button,

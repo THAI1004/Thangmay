@@ -24,6 +24,6 @@ export class HistoryMaintenanceController {
   async listHistoryByIdProject (@Param('idProject') idProject: number) {
     const project = await this.projectService.findOne(+idProject)
     const listHistory = await this.historyMaintenanceService.findByProject(idProject)
-    return {listHistory, project}
+    return {listHistory, project, activeMenu: 'historyMaintaenance/list'}
   }
 }

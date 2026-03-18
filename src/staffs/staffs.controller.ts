@@ -45,7 +45,7 @@ export class StaffsController {
   @Render('admin/staff/busines')
   async findBusinesList () {
     const staffsBusiness = await this.staffsService.findAllBusines()
-    return {staffsBusiness}
+    return {staffsBusiness, activeMenu: 'staffs/busines'}
   }
   @SetMetadata('permision', 'MANAGE_STAFF')
   @Get('/add')
@@ -61,6 +61,7 @@ export class StaffsController {
       departmens,
       staffEmailOld,
       staffPhoneOld,
+      activeMenu: 'staffs/add',
     }
   }
   @SetMetadata('permision', 'MANAGE_STAFF')
@@ -112,7 +113,7 @@ export class StaffsController {
   @Get('changePass')
   @Render('admin/staff/changePass')
   async changePass () {
-    return {}
+    return {activeMenu: 'staffs/changePass'}
   }
   @Patch('changePass')
   async changePassPatch (
@@ -197,6 +198,7 @@ export class StaffsController {
     }
     return {
       staffs,
+      activeMenu: 'staffs',
     }
   }
   @SetMetadata('permision', 'MANAGE_STAFF')

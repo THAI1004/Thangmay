@@ -147,6 +147,7 @@
                     Nội dung bảo trì
                   </th>
                   <th class="text-900 sort" data-sort="thoigian">Thời gian</th>
+                  <th class="text-900 sort" data-sort="thoigianthucte">Thời gian thực tế</th>
                   <th class="text-900 sort" data-sort="nhanvien">
                     Nhân viên thực hiện
                   </th>
@@ -168,6 +169,12 @@
                     </td>
                     <td class="noidung"><%=item.reason%></td>
                     <td class="thoigian"><%=item.time%></td>
+                    <td class="thoigianthucte">
+                      <div class="d-flex align-items-center">
+                        <input type="date" class="form-control form-control-sm me-2 actual-date-input" value="<%= item.actualDate ? new Date(item.actualDate).toISOString().split('T')[0] : '' %>" data-id="<%= item.id %>" />
+                        <button class="btn btn-sm btn-primary save-actual-date" data-id="<%= item.id %>"><i class="fas fa-save"></i></button>
+                      </div>
+                    </td>
                     <td class="nhanvien">
                       <% item.maintenanceActions.forEach(function(action) { %>
                       <img src="/images/avatar/<%=  action.staff.avatar %>" alt
@@ -497,8 +504,8 @@
     const baoTriInput = document.getElementById('baoTri')
     const monthInput = document.getElementById('month')
     const resultDiv = document.getElementById('result')
-    baoTriInput.addEventListener('change', renderInputs)
-    monthInput.addEventListener('input', renderInputs)
+    if (baoTriInput) baoTriInput.addEventListener('change', renderInputs)
+    if (monthInput) monthInput.addEventListener('input', renderInputs)
 
     function renderInputs() {
       const today = new Date()
@@ -529,7 +536,7 @@
     const month = String(today.getMonth() + 1).padStart(2, '0')
     const day = String(today.getDate()).padStart(2, '0')
     const minDate = `${year}-${month}-${day}`
-    baoTriInput.min = minDate
+    if (baoTriInput) baoTriInput.min = minDate
   })
 
   function addInput() {
@@ -544,16 +551,19 @@
   function removeInput(element) {
     element.parentElement.remove()
   }
-  document
-    .getElementById('AddBaotriBtn')
-    .addEventListener('click', function() {
+  const addBaotriBtn = document.getElementById('AddBaotriBtn')
+  if (addBaotriBtn) {
+    addBaotriBtn.addEventListener('click', function() {
       const form = document.getElementById('baotriForm')
-      if (form.style.display === 'none') {
-        form.style.display = 'block'
-      } else {
-        form.style.display = 'none'
+      if (form) {
+        if (form.style.display === 'none') {
+          form.style.display = 'block'
+        } else {
+          form.style.display = 'none'
+        }
       }
     })
+  }
 
   function toggleWarrantyStyle() {
     const warrantyDiv = document.getElementById('add-warranty')
@@ -563,5 +573,49 @@
       warrantyDiv.style.display = 'none'
     }
   }
+  function updateWarrantyBadge() {
+    // ... logic existing in the view
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.body.addEventListener('click', function(e) {
+      const btn = e.target.closest('.save-actual-date');
+      if (!btn) return;
+      e.preventDefault();
+      
+      const id = btn.getAttribute('data-id');
+      const container = btn.closest('.d-flex');
+      const input = container ? container.querySelector('.actual-date-input') : null;
+      const actualDate = input ? input.value : '';
+      const originalHtml = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+      
+      fetch('/maintenance/actual-date/' + id, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ actualDate: actualDate })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+        if (res.success) {
+          alert('Đã cập nhật ngày bảo trì thực tế thành công!');
+        } else {
+          alert('Cập nhật thất bại. Vui lòng thử lại.');
+        }
+      })
+      .catch(err => {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+        alert('Đã xảy ra lỗi khi cập nhật.');
+        console.error('Lỗi khi lưu actualDate:', err);
+      });
+    });
+  });
 </script>
 <%- include('../../layout/footer') %>

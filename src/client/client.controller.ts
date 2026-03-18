@@ -55,6 +55,7 @@ export class ClientController {
       return {
         projects,
         projectStaffs,
+        activeMenu: 'VIEW_ASSIGNED_PROJECTS'
       };
     } else {
       res.redirect("/login");
@@ -110,6 +111,7 @@ export class ClientController {
         project,
         idStaff,
         maintenanceActions,
+        activeMenu: 'list-task',
       };
     } else {
       res.redirect("/login");

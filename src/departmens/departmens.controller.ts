@@ -27,6 +27,7 @@ export class DepartmensController {
         departmens,
         message: 'Thêm phòng ban thành công!',
         status: 'success',
+        activeMenu: 'departmens',
       })
     } else {
       const departmens = await this.departmensService.findAll()
@@ -34,6 +35,7 @@ export class DepartmensController {
         departmens,
         message: 'Thêm phòng ban thất bại!',
         status: 'error',
+        activeMenu: 'departmens',
       })
     }
   }
@@ -44,6 +46,7 @@ export class DepartmensController {
     const departmens = await this.departmensService.findAll()
     return {
       departmens,
+      activeMenu: 'departmens',
     }
   }
   @SetMetadata('permision', 'VIEW_DEPARTMENTS')

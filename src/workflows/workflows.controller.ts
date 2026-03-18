@@ -28,6 +28,7 @@ export class WorkflowsController {
     const workflows = await this.workflowsService.findAll()
     return {
       workflows,
+      activeMenu: 'workflows',
     }
   }
   @SetMetadata('permision', 'MANAGE_WORKFLOWS')
@@ -63,6 +64,7 @@ export class WorkflowsController {
       PickerIn,
       NonePickerIn,
       canEdit,
+      activeMenu: 'workflows',
     }
   }
   @SetMetadata('permision', 'MANAGE_WORKFLOWS')

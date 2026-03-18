@@ -140,14 +140,21 @@ export class StaffsService {
     return this.staffsRepository.findOne({where: {email}})
   }
   async login (loginDto: LoginDto) {
+    console.log('[DEBUG] Trying to login with email:', loginDto.email);
     const staff = await this.staffsRepository.findOne({
-      where: {email: loginDto.email, status: true},
+      where: {email: loginDto.email}, // Removed status strict check to see if it exists
       relations: ['department', 'position'],
     })
+    console.log('[DEBUG] Staff found:', staff ? `Yes, status: ${staff.status}` : 'No');
     if (!staff) {
       return false
     }
+    if (!staff.status) {
+      console.log('[DEBUG] Staff exists but status is false');
+      return false;
+    }
     const isPasswordValid = await bcrypt.compare(loginDto.password, staff.password)
+    console.log('[DEBUG] Password valid:', isPasswordValid);
     if (!isPasswordValid) {
       return false
     }

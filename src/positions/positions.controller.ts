@@ -18,6 +18,7 @@ export class PositionsController {
     const positions = await this.positionsService.findAll()
     return {
       positions,
+      activeMenu: 'positions',
     }
   }
   @SetMetadata('permision', 'VIEW_POSITIONS')

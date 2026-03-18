@@ -36,11 +36,11 @@ export class ProjectController {
     private readonly departmensService: DepartmensService,
     private readonly projectStaffService: ProjectStaffService,
   ) { }
-  @Get('/maintenance/:localtionName')
+  @Get('/maintenance/localtion/:localtionName')
   @Render('admin/maintenance/maintenance_localtion')
   async filterMaintenanceByLocaltion(@Param('localtionName') localtionName: string, @Req() req: Request) {
     const maintenances = await this.projectService.findAllByLocaltion(localtionName)
-    return { localtionName, maintenances }
+    return { localtionName, maintenances, activeMenu: 'VIEW_PROJECT_STATISTICS' }
   }
   @SetMetadata('permision', 'VIEW_PROJECT_STATISTICS')
   @Get('statistical/export')
@@ -584,6 +584,7 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     }
     return {
       projects,
+      activeMenu: 'project/maintenance',
     }
   }
   @Get('/maintenance/:id')
@@ -605,6 +606,7 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
       departments,
       project,
       staffs,
+      activeMenu: 'project/maintenance',
     }
   }
   @Get('/:id')

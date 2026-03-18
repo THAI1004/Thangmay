@@ -11,7 +11,12 @@
 .toast-message label {
   color: #ffffff;
 }
-
+td{
+  font-weight: 900;
+}
+input{
+  font-weight: 900;
+}
 .toast-message a:hover {
   color: #cccccc;
   text-decoration: none;
