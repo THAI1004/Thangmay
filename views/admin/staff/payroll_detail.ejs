@@ -34,7 +34,7 @@ return `${day}/${month}/${year}`;
                 </g>
               </g>
             </svg><!-- <small class="fa fa-check-circle text-primary" data-fa-transform="shrink-4 down-2"></small> Font Awesome fontawesome.com --></span></h4>
-        <h5 class="fs-9 fw-normal">Phòng ban: <%= Staff.department.name %></h5>
+        <h5 class="fs-9 fw-normal">Phòng ban: <%= Staff.department ? Staff.department.name : 'Không xác định' %></h5>
         <p class="text-500">Chức vụ: <%= Staff.position.name %></p>
         <div class="border-bottom border-dashed my-4 d-lg-none"></div>
       </div>

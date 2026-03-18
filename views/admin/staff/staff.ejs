@@ -38,11 +38,10 @@
               <tr data-id="<%= staff.id %>" data-name="<%= staff.name %>" data-description="<%= staff.description %>">
                 <td class="ten"><%= staff.full_name %></td>
                 <td class="phongban">
-                  <%= staff.role_admin ? 'Tổng giám đốc' : staff.department.name
-                  %>
+                  <%= staff.role_admin ? 'Tổng giám đốc' : (staff.department ? staff.department.name : 'Chưa có phòng ban') %>
                 </td>
                 <td class="chucvu">
-                  <%= staff.role_admin ? 'Tổng giám đốc' : staff.position.name %>
+                  <%= staff.role_admin ? 'Tổng giám đốc' : (staff.position ? staff.position.name : 'Chưa có chức vụ') %>
                 </td>
                 <td class="sdt"><%= staff.number_phone %></td>
                 <td class="email"><%= staff.email %></td>

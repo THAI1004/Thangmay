@@ -1,6 +1,6 @@
 import {Maintenance} from 'src/maintenance/entities/maintenance.entity'
 import {Project} from 'src/project/entities/project.entity'
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm'
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, DeleteDateColumn} from 'typeorm'
 
 @Entity()
 export class HistoryMaintenance {
@@ -20,4 +20,6 @@ export class HistoryMaintenance {
   project: Project
   @OneToMany(() => Maintenance, (maintenance) => maintenance.historyMaintenance)
   maintenance: Maintenance[]
+  @DeleteDateColumn()
+  deletedAt?: Date
 }

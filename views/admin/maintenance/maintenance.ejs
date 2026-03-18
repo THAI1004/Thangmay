@@ -1,4 +1,5 @@
 <%- include('../../layout/header') %>
+
 <style>
   .infor-staff:hover {
     opacity: 0.7;
@@ -10,611 +11,313 @@
     border-bottom: 0.5px solid rgb(77, 211, 229);
   }
 
-  #itemList {
+  #itemList, .itemList {
     display: none;
   }
-
-  .itemList {
-    display: none;
+  
+  /* Đảm bảo bảng không bị vỡ khi lọc */
+  .table-responsive {
+    min-height: 300px;
   }
 </style>
+
 <div class="card p-4">
-  <div class>
-    <div class="m-b-30">
-      <h4 id="maintenance-title">Danh sách lịch bảo trì theo tháng 12/2025</h4>
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <select id="filterMonth" class="form-select">
-            <%
-              const now = new Date();
-              const currentMonth = now.getMonth() + 1;
-              for (let m = 1; m <= 12; m++) {
-              %>
-              <option value="<%= m %>" <%= m === currentMonth ? 'selected' : '' %>>Tháng <%= m %></option>
-             <% } %>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <select id="filterYear" class="form-select">
-            <%
-              const currentYear = 2025;
-              for (let y = 2024; y <= 2025; y++) {
-              %>
-              <option value="<%= y %>" <%= y === currentYear ? 'selected' : '' %>>Năm <%= y %></option>
-             <% } %>
-          </select>
-        </div>
+  <div class="m-b-30">
+    <h4 id="maintenance-title">Danh sách lịch bảo trì</h4>
+    
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Chọn tháng:</label>
+        <select id="filterMonth" class="form-select">
+          <% 
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            for (let m = 1; m <= 12; m++) { 
+          %>
+            <option value="<%= m %>" <%= m === currentMonth ? 'selected' : '' %>>Tháng <%= m %></option>
+          <% } %>
+        </select>
       </div>
-
-      <div class="modal fade" id="error-modal" tabindex="-1" role="dialog"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document"
-          style="max-width: 500px">
-          <div class="modal-content position-relative">
-            <div class="position-absolute top-0 end-0 mt-2 me-2 z-1">
-              <button
-                class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base"
-                data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-
-
-
-
-            <div class="modal-body p-0">
-              <div class="rounded-top-3 py-3 ps-4 pe-6 bg-body-tertiary">
-                <h4 class="mb-1" id="modalExampleDemoLabel">
-                  Thêm bảo trì
-                </h4>
-              </div>
-              <div class="p-4 pb-0">
-                <form class="myForm2" method="post" action="/maintenance/add">
-                  <div class="mb-3">
-                    <div class="form-group mb-3">
-                      <label for="feeSelect" class="form-label">Loại phí:</label>
-                      <select name="fee" id="feeSelect" class="form-select">
-                        <option selected value="1">Mất phí</option>
-                        <option value="0">Miễn phí</option>
-                      </select>
-                    </div>
-                    <label class="col-form-label" for="recipient-name2">Thông tin công
-                      trình:</label>
-                    <input class="form-control recipient-name2" type="text"
-                      oninput="filterList2(event)" />
-                    <ul class="itemList itemList2">
-                      <% projects.forEach(function(project) { %>
-                      <li class="btn w-100 infor-staff"
-                        onclick="clickProject2('<%= project.full_name %>- <%= project.number_phone %>','<%=project.id%>')">
-                        <%= project.full_name %> - <%= project.code_project %>
-                      </li>
-                      <% }) %>
-
-                    </ul>
-                  </div>
-                  <div class="mb-3" id="recipient-nameProject2" style="display: none">
-                    <label class="col-form-label" for="recipient-name">Tên chủ dự
-                      án:</label>
-                    <input class="form-control" type="text" name="projectName" />
-                    <input type="hidden" name="confirmSuccess" value="1" />
-                  </div>
-                  <div class="mb-3">
-                    <label class="col-form-label" for="recipient-time2">Thời gian bảo
-                      trì:</label>
-                    <input class="form-control" id="recipient-time2" type="date"
-                      name="time" disabled />
-                  </div>
-                  <div class="mb-3">
-                    <label class="col-form-label" for="message-reason2">Mô tả:</label>
-                    <input class="form-control" id="recipient-reason2" type="text"
-                      name="reason" disabled />
-                  </div>
-                  <input type="submit" class="btn btn-primary" value="Xác nhận" />
-                </form>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+      <div class="col-md-6">
+        <label class="form-label">Chọn năm:</label>
+        <select id="filterYear" class="form-select">
+          <% 
+            const currentYear = 2026; 
+            for (let y = 2024; y <= 2026; y++) { 
+          %>
+            <option value="<%= y %>" <%= y === currentYear ? 'selected' : '' %>>Năm <%= y %></option>
+          <% } %>
+        </select>
       </div>
-      <div class="tab-pane preview-tab-pane active" role="tabpanel"
-        aria-labelledby="tab-dom-da4be276-f13c-47d6-be82-655bc6452fd5"
-        id="dom-da4be276-f13c-47d6-be82-655bc6452fd5">
-        <div id="tableExample3"
-          data-list='{"valueNames":["duan","noidung","thoigian","nhanvien","trangthai","loai"],"page":20,"pagination":true}'>
-          <div class="row justify-content-end g-0">
-            <div class="col-auto col-sm-5 mb-3">
-              <form>
-                <div class="input-group">
-                  <input class="form-control form-control-sm shadow-none search"
-                    type="search" placeholder="Search..." aria-label="search" />
-                  <div class="input-group-text bg-transparent">
-                    <span class="fa fa-search fs-10 text-600"></span>
-                  </div>
-                </div>
-              </form>
-            </div>
+    </div>
+
+    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 500px">
+        <div class="modal-content">
+          <div class="modal-header bg-body-tertiary">
+            <h4 class="modal-title">Thêm bảo trì</h4>
+            <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="table-responsive scrollbar">
-            <table class="table table-bordered table-hover table-striped fs-10 mb-0">
-              <thead class="bg-200">
-                <tr>
-                  <th class="text-900 sort" data-sort="duan">Công trình</th>
-                  <th class="text-900 sort" data-sort="noidung">
-                    Nội dung bảo trì
-                  </th>
-                  <th class="text-900 sort" data-sort="thoigian">Thời gian</th>
-                  <th class="text-900 sort" data-sort="thoigianthucte">Thời gian thực tế</th>
-                  <th class="text-900 sort" data-sort="nhanvien">
-                    Nhân viên thực hiện
-                  </th>
-                  <th class="text-900 sort" data-sort="trangthai">
-                    Trạng thái
-                  </th>
-                  <th class="text-900 sort" data-sort="loai">
-                    Loại
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="list">
-                <% if (maintenanceWProjects && maintenanceWProjects.length > 0) { %>
-                  <% maintenanceWProjects.forEach(function(item,index) { %>
-                  <tr>
-                    <td class="duan">
-                      <%= item.project && item.project.full_name ?
-                      item.project.full_name :item.projectName %>
-                    </td>
-                    <td class="noidung"><%=item.reason%></td>
-                    <td class="thoigian"><%=item.time%></td>
-                    <td class="thoigianthucte">
-                      <div class="d-flex align-items-center">
-                        <input type="date" class="form-control form-control-sm me-2 actual-date-input" value="<%= item.actualDate ? new Date(item.actualDate).toISOString().split('T')[0] : '' %>" data-id="<%= item.id %>" />
-                        <button class="btn btn-sm btn-primary save-actual-date" data-id="<%= item.id %>"><i class="fas fa-save"></i></button>
-                      </div>
-                    </td>
-                    <td class="nhanvien">
-                      <% item.maintenanceActions.forEach(function(action) { %>
-                      <img src="/images/avatar/<%=  action.staff.avatar %>" alt
-                        height="30px" width="30px" style="border-radius: 50%" />
-                      <%= action.staff.full_name %>
-                      <br />
-                      <br />
-                      <% }) %>
-                      <p class="btn btn-primary add-staff"
-                        idProject="<%=  item.project && item.project.id ?  item.project.id :'0'  %>"
-                        idValue="<%=item.id%>">
-                        +
-                      </p>
-                    </td>
-                    <td class="trangthai" style="width: fit-content">
-                      <p style="width: fit-content" id="maintenance-<%= index %>">
-                        <span class="font__weight-semibold">
-                          <% if (item.maintenanceActions.length === 0) { %>
-                          <span class="badge rounded badge-subtle-warning false">
-                            Chưa bảo trì
-                          </span>
-                          <% } else { let allCompleted = true
-                          item.maintenanceActions.forEach(element => {
-                          if(element.status == null) allCompleted = false
-                          });
-                          %>
-                          <% if(allCompleted) { %>
-                          <span class="badge rounded badge-subtle-success false">
-                            Đã hoàn thành
-                          </span>
-                          <% } else { %>
-                          <span class="badge rounded badge-subtle-danger false">
-                            Chưa hoàn thành
-                          </span>
-                          <% } %> <% } %>
-                        </span>
-                      </p>
-                    </td>
-                    <td class="loai">
-                      <% if(item.fee) { %>
-                      <span class="badge rounded badge-subtle-warning">Mất phí</span>
-                      <% } else { %>
-                      <span class="badge rounded badge-subtle-success">Miễn phí</span>
-                      <% } %>
-                    </td>
-                  </tr>
-                  <% }); %>
-                <% } else { %>
-                  <tr>
-                    <td colspan="6" class="text-center py-4">
-                      <div class="text-muted">
-                        <i class="fas fa-inbox fa-2x mb-2"></i>
-                        <p class="mb-0">Chưa có dữ liệu</p>
-                      </div>
-                    </td>
-                  </tr>
-                <% } %>
-              </tbody>
-            </table>
-          </div>
-          <div class="d-flex justify-content-center mt-3">
-            <button class="btn btn-sm btn-falcon-default me-1" type="button"
-              title="Previous" data-list-pagination="prev">
-              <span class="fas fa-chevron-left"></span>
-            </button>
-            <ul class="pagination mb-0"></ul>
-            <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next"
-              data-list-pagination="next">
-              <span class="fas fa-chevron-right"> </span>
-            </button>
+          <div class="modal-body p-4">
+            <form class="myForm2" method="post" action="/maintenance/add">
+              <div class="mb-3">
+                <label class="form-label">Loại phí:</label>
+                <select name="fee" class="form-select">
+                  <option value="1">Mất phí</option>
+                  <option value="0">Miễn phí</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Thông tin công trình:</label>
+                <input class="form-control recipient-name2" type="text" oninput="filterList2(event)" placeholder="Tìm tên hoặc mã..." />
+                <ul class="itemList itemList2 list-group mt-1 shadow-sm">
+                  <% projects.forEach(function(p) { %>
+                    <li class="list-group-item list-group-item-action infor-staff" 
+                        onclick="clickProject2('<%= p.full_name %> - <%= p.number_phone %>','<%= p.id %>')">
+                      <%= p.full_name %> - <%= p.code_project %>
+                    </li>
+                  <% }) %>
+                </ul>
+              </div>
+              <div class="mb-3" id="recipient-nameProject2" style="display: none">
+                <label class="form-label">Tên chủ dự án:</label>
+                <input class="form-control" type="text" name="projectName" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Thời gian bảo trì:</label>
+                <input class="form-control" id="recipient-time2" type="date" name="time" disabled />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Mô tả:</label>
+                <input class="form-control" id="recipient-reason2" type="text" name="reason" disabled />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Xác nhận</button>
+            </form>
           </div>
         </div>
       </div>
     </div>
+
+    <div id="tableExample3" data-list='{"valueNames":["duan","noidung","thoigian","nhanvien","trangthai","loai"],"page":20,"pagination":true}'>
+      <div class="row justify-content-end mb-3">
+        <div class="col-auto">
+          <div class="input-group">
+            <input class="form-control form-control-sm search" type="search" placeholder="Tìm kiếm nhanh..." />
+            <span class="input-group-text bg-transparent"><i class="fa fa-search"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped fs-10 mb-0">
+          <thead class="bg-200">
+            <tr>
+              <th class="sort" data-sort="duan">Công trình</th>
+              <th class="sort" data-sort="noidung">Nội dung</th>
+              <th class="sort" data-sort="thoigian">Thời gian</th>
+              <th class="sort" data-sort="nhanvien">Nhân viên</th>
+              <th class="sort" data-sort="trangthai">Trạng thái</th>
+              <th class="sort" data-sort="loai">Loại</th>
+            </tr>
+          </thead>
+          <tbody class="list">
+            <% if (maintenanceWProjects && maintenanceWProjects.length > 0) { %>
+              <% maintenanceWProjects.forEach(function(item, index) { %>
+                <tr data-item-date="<%= item.time %>">
+                  <td class="duan">
+                    <%= item.project && item.project.full_name ? item.project.full_name : item.projectName %>
+                  </td>
+                  <td class="noidung"><%= item.reason %></td>
+                  <td class="thoigian"><%= item.time %></td>
+                  <td class="nhanvien">
+                    <% item.maintenanceActions.forEach(function(action) { %>
+                      <div class="mb-1">
+                        <img src="/images/avatar/<%= action.staff.avatar %>" height="25" width="25" class="rounded-circle me-1" />
+                        <%= action.staff.full_name %>
+                      </div>
+                    <% }) %>
+                    <button class="btn btn-sm btn-outline-primary add-staff mt-1" 
+                            idProject="<%= item.project ? item.project.id : '0' %>" 
+                            idValue="<%= item.id %>">+</button>
+                  </td>
+                  <td class="trangthai">
+                    <% 
+                      let statusHtml = '';
+                      if (item.maintenanceActions.length === 0) {
+                        statusHtml = '<span class="badge badge-subtle-warning">Chưa bảo trì</span>';
+                      } else {
+                        let allDone = item.maintenanceActions.every(a => a.status != null);
+                        statusHtml = allDone ? 
+                          '<span class="badge badge-subtle-success">Đã hoàn thành</span>' : 
+                          '<span class="badge badge-subtle-danger">Chưa hoàn thành</span>';
+                      }
+                    %>
+                    <div id="maintenance-<%= index %>"><%- statusHtml %></div>
+                  </td>
+                  <td class="loai">
+                    <span class="badge rounded <%= item.fee ? 'badge-subtle-warning' : 'badge-subtle-success' %>">
+                      <%= item.fee ? 'Mất phí' : 'Miễn phí' %>
+                    </span>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-center mt-3">
+        <button class="btn btn-sm btn-falcon-default me-1" type="button" data-list-pagination="prev"><i class="fas fa-chevron-left"></i></button>
+        <ul class="pagination mb-0"></ul>
+        <button class="btn btn-sm btn-falcon-default ms-1" type="button" data-list-pagination="next"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
   </div>
 </div>
+
 <script>
+  // Khởi tạo List.js
+  let maintenanceList;
+
+  function initListJS() {
+    maintenanceList = new List('tableExample3', {
+      valueNames: ['duan', 'noidung', 'thoigian', 'nhanvien', 'trangthai', 'loai'],
+      page: 20,
+      pagination: true
+    });
+  }
+
+  // Hàm lọc chính
+  function filterByMonthYear() {
+    const selectedMonth = parseInt(document.getElementById('filterMonth').value);
+    const selectedYear = parseInt(document.getElementById('filterYear').value);
+
+    document.getElementById('maintenance-title').textContent = `Danh sách lịch bảo trì theo tháng ${selectedMonth}/${selectedYear}`;
+
+    if (maintenanceList) {
+      maintenanceList.filter(function(item) {
+        // Lấy ngày từ thuộc tính data của dòng (được List.js lưu trong elm)
+        const dateStr = item.elm.getAttribute('data-item-date');
+        if (!dateStr) return false;
+
+        const d = new Date(dateStr);
+        return (d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear);
+      });
+    }
+  }
+
+  // Event Listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    initListJS();
+    filterByMonthYear();
+
+    document.getElementById('filterMonth').addEventListener('change', filterByMonthYear);
+    document.getElementById('filterYear').addEventListener('change', filterByMonthYear);
+    
+    // Logic Highlight ngày gần kề (3 ngày)
+    const today = new Date();
+    const threeDaysLater = new Date();
+    threeDaysLater.setDate(today.getDate() + 3);
+
+    document.querySelectorAll('tr[data-item-date]').forEach(row => {
+      const itemDate = new Date(row.getAttribute('data-item-date'));
+      if (itemDate >= today && itemDate <= threeDaysLater) {
+        row.style.backgroundColor = '#fff3cd'; // Highlight nhẹ màu vàng
+      }
+    });
+  });
+
+  // Các hàm bổ trợ (Project selection, Modal staff...)
   function clickProject2(value, id) {
-    var form = document.querySelector('.myForm2')
-    var hiddenInput = form.querySelector("input[name='project']")
-    if (id == 0) {
-      document.querySelector('#recipient-nameProject2').style.display = 'block'
+    const form = document.querySelector('.myForm2');
+    let hiddenInput = form.querySelector("input[name='project']");
+    if (!hiddenInput) {
+      hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'project';
+      form.appendChild(hiddenInput);
     }
-    if (hiddenInput) {
-      hiddenInput.value = id
-    } else {
-      hiddenInput = document.createElement('input')
-      hiddenInput.type = 'hidden'
-      hiddenInput.name = 'project'
-      hiddenInput.value = id
-      form.appendChild(hiddenInput)
-    }
-    document.getElementById('recipient-time2').disabled = false
-    document.getElementById('recipient-reason2').disabled = false
-    document.querySelector('.recipient-name2').value = value
-    document.querySelector('.itemList2').style.display = 'none'
+    hiddenInput.value = id;
+
+    document.getElementById('recipient-nameProject2').style.display = (id == 0) ? 'block' : 'none';
+    document.getElementById('recipient-time2').disabled = false;
+    document.getElementById('recipient-reason2').disabled = false;
+    document.querySelector('.recipient-name2').value = value;
+    document.querySelector('.itemList2').style.display = 'none';
   }
 
   function filterList2(event) {
-    var input = event.target.value.toLowerCase()
-    var items = document.querySelector('.itemList2').getElementsByTagName('li')
-    var list = document.querySelector('.itemList2')
-    if (input) {
-      list.style.display = 'block'
-    } else {
-      list.style.display = 'none'
-    }
-    for (var i = 0; i < items.length; i++) {
-      var itemText = items[i].textContent || items[i].innerText
-      if (itemText.toLowerCase().includes(input)) {
-        items[i].style.display = ''
-      } else {
-        items[i].style.display = 'none'
-      }
-    }
-  }
-  document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date()
-    const threeDaysFromNow = new Date(today)
-    threeDaysFromNow.setDate(today.getDate() + 3)
-    const maintenanceWProjects = JSON.parse(
-      '<%- JSON.stringify(maintenanceWProjects).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t") %>',
-    )
-
-    // Lưu dữ liệu gốc để lọc
-    window.maintenanceData = maintenanceWProjects
-
-    maintenanceWProjects.forEach(function(item, index) {
-      const itemDate = new Date(item.time)
-      const element = document.getElementById(`maintenance-${index}`)
-      if (itemDate >= today && itemDate <= threeDaysFromNow) {
-        element.classList.add('alert-warning')
-      }
-    })
-
-    // Gọi hàm lọc ban đầu
-    filterByMonthYear()
-  })
-
-  // Hàm lọc dữ liệu theo tháng và năm
-  function filterByMonthYear() {
-    const selectedMonth = parseInt(document.getElementById('filterMonth').value)
-    const selectedYear = parseInt(document.getElementById('filterYear').value)
-
-    // Cập nhật tiêu đề
-    document.getElementById('maintenance-title').textContent =
-      `Danh sách lịch bảo trì theo tháng ${selectedMonth}/${selectedYear}`
-
-    // Lấy tất cả các dòng trong bảng
-    const tableRows = document.querySelectorAll('tbody.list tr')
-
-    tableRows.forEach(function(row, index) {
-      const item = window.maintenanceData[index]
-      if (!item) {
-        row.style.display = 'none'
-        return
-      }
-
-      const itemDate = new Date(item.time)
-      const itemMonth = itemDate.getMonth() + 1 // getMonth() trả về 0-11, cần +1
-      const itemYear = itemDate.getFullYear()
-
-      // Kiểm tra nếu tháng và năm khớp với lựa chọn
-      if (itemMonth === selectedMonth && itemYear === selectedYear) {
-        row.style.display = ''
-      } else {
-        row.style.display = 'none'
-      }
-    })
-  }
-
-  // Thêm event listener cho các select box
-  document.getElementById('filterMonth').addEventListener('change', filterByMonthYear)
-  document.getElementById('filterYear').addEventListener('change', filterByMonthYear)
-  $(document).ready(function() {
-    $('.add-staff').click(function() {
-      $('#newPositionModal').remove()
-      var id = $(this).attr('idValue')
-      var idProject = $(this).attr('idProject')
-      var form =
-        `<form action="/maintenance-actions/${idProject}" method="POST" class="modal fade" id="newPositionModal" tabindex="-1" aria-labelledby="newPositionModalLabel" aria-hidden="true">` +
-        '<div class="modal-dialog">' +
-        '<div class="modal-content">' +
-        '<div class="modal-header">' +
-        '<div class="d-flex justify-content-between w-100" >' +
-        `<h5 class="modal-title" id="newPositionModalLabel">Chọn người bảo trì</h5>
-        <input type="hidden" id="staffId" name="staff">
-        <input type="hidden" value="${id}" name="maintenance">
-        ` +
-        '<button class="btn btn-primary clickXN" disable onclick="clickXN()" disabled>Xác nhận</button>' +
-        '</div>' +
-        '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        '<div >' +
-        '<div class="form-group">' +
-        '<label for="date-time">Chọn thời gian hết hạn:</label>' +
-        '<input type="datetime-local" class="form-control" id="date-time" name="time" onchange="changeDate()">' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="date-time">Chọn trọng số:</label>' +
-        `<select name="weight" id="weight-select" class="form-control">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-        ` +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="staff">Thêm nhân viên:</label>' +
-        '<input disabled type="text" class="form-control" id="staff-search" oninput="filterList()" autocomplete="off">' +
-        `<ul id="itemList">
-  <% staffs.forEach(function(staff) { %>
-        <li class="btn w-100 infor-staff" data-id="<%=staff.id%>" onclick="pushStaff('<%=staff.full_name%>','<%=staff.id%>')"><%=staff.full_name%> - <%=staff.number_phone%></li>
-        <% }) %>
-</ul>`
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</form>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>'
-      $('body').append(form)
-      $('#newPositionModal').modal('show')
-      $('#date-time').val('')
-      $('#staff-search').val('')
-    })
-    $('#add-maintenance').click(function() {
-      $('#newPositionModal').remove()
-      var id = $(this).attr('idValue')
-      var form =
-        '<form action="/maintenance/0" method="POST" class="modal fade" id="newPositionModal" tabindex="-1" aria-labelledby="newPositionModalLabel" aria-hidden="true">' +
-        '<div class="modal-dialog">' +
-        '<div class="modal-content">' +
-        '<div class="modal-header">' +
-        '<input type="hidden" id="staffId" name="project" value= "">' +
-        '<div class="d-flex justify-content-between w-100" >' +
-        `<h5 class="modal-title" id="newPositionModalLabel">Thêm bảo trì</h5>` +
-        '<button class="btn btn-success clickXN" disable onclick="clickXN()" disabled>Xác nhận</button>' +
-        '</div>' +
-        '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        '<div >' +
-        '<div class="form-group">' +
-        '<label for="date-time">Chọn thời gian hết hạn:</label>' +
-        '<input type="datetime-local" class="form-control" id="date-time" name="time" onchange="changeDate()">' +
-        '</div>' +
-        '<div class="form-group">' +
-        '<label for="staff">Nội dung bảo trì:</label>' +
-        '<input disabled type="text" class="form-control" id="staff-search" oninput="onpenSubmit()" name="reason" autocomplete="off">' +
-        `<ul id="itemList">
-  <% staffs.forEach(function(staff) { %>
-        <li class="btn w-100 infor-staff" data-id="<%=staff.id%>" onclick="pushStaff('<%=staff.full_name%>','<%=staff.id%>')"><%=staff.full_name%> - <%=staff.number_phone%></li>
-        <% }) %>
-</ul>`
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</form>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>'
-      $('body').append(form)
-      $('#newPositionModal').modal('show')
-      $('#date-time').val('')
-      $('#staff-search').val('')
-    })
-  })
-
-  function pushStaff(value, id) {
-    if ($('#date-time').val() != '') {
-      $('.clickXN').prop('disabled', false)
-      $('#staffId').attr('value', id)
-    } else {
-      $('.clickXN').prop('disabled', true)
-    }
-    document.getElementById('staff-search').value = value
-    document.getElementById('itemList').style.display = 'none'
-  }
-
-  function onpenSubmit() {
-    $('.clickXN').prop('disabled', false)
-  }
-
-  function filterList() {
-    document.getElementById('itemList').style.display = 'block'
-    var input = document.getElementById('staff-search').value.toLowerCase()
-    var items = document.getElementById('itemList').getElementsByTagName('li')
-    var list = document.getElementById('itemList')
-    console.log(input)
-    if (input) {
-      list.style.display = 'block'
-    } else {
-      list.style.display = 'none'
-    }
-    for (var i = 0; i < items.length; i++) {
-      var itemText = items[i].textContent || items[i].innerText
-      var dataId = $(items[i]).attr('data-id')
-      var stepId = $(items[i]).attr('data-stepId')
-      if (itemText.toLowerCase().includes(input)) {
-        items[i].style.display = ''
-      } else {
-        items[i].style.display = 'none'
-      }
+    const input = event.target.value.toLowerCase();
+    const list = document.querySelector('.itemList2');
+    const items = list.getElementsByTagName('li');
+    
+    list.style.display = input ? 'block' : 'none';
+    for (let item of items) {
+      item.style.display = item.textContent.toLowerCase().includes(input) ? '' : 'none';
     }
   }
 
-  function changeDate() {
-    if ($('#date-time').val() != '') {
-      $('#staff-search').prop('disabled', false)
-    } else {
-      $('#staff-search').prop('disabled', true)
-    }
-  }
-  document.addEventListener('DOMContentLoaded', function() {
-    const baoTriInput = document.getElementById('baoTri')
-    const monthInput = document.getElementById('month')
-    const resultDiv = document.getElementById('result')
-    if (baoTriInput) baoTriInput.addEventListener('change', renderInputs)
-    if (monthInput) monthInput.addEventListener('input', renderInputs)
+  // Xử lý nút thêm nhân viên (Sử dụng jQuery như code cũ của bạn để tương thích bootstrap modal)
+  $(document).on('click', '.add-staff', function() {
+    const id = $(this).attr('idValue');
+    const idProject = $(this).attr('idProject');
+    
+    // Tạo modal động (Giữ nguyên logic HTML của bạn)
+    const modalHtml = `
+      <div class="modal fade" id="dynamicStaffModal" tabindex="-1">
+        <div class="modal-dialog">
+          <form action="/maintenance-actions/${idProject}" method="POST" class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Chọn người bảo trì</h5>
+              <button type="submit" class="btn btn-primary btn-sm ms-auto me-2 confirm-btn" disabled>Xác nhận</button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" name="maintenance" value="${id}">
+              <input type="hidden" name="staff" id="selectedStaffId">
+              <div class="mb-3">
+                <label>Thời gian hết hạn:</label>
+                <input type="datetime-local" class="form-control" name="time" id="staff-deadline" required>
+              </div>
+              <div class="mb-3">
+                <label>Trọng số (1-10):</label>
+                <select name="weight" class="form-select">
+                  ${[1,2,3,4,5,6,7,8,9,10].map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label>Nhân viên:</label>
+                <input type="text" class="form-control" id="staff-search-input" placeholder="Gõ tên nhân viên...">
+                <ul class="list-group mt-1 shadow-sm" id="staff-dropdown" style="display:none; max-height:200px; overflow-y:auto;">
+                  <% staffs.forEach(function(s) { %>
+                    <li class="list-group-item list-group-item-action cursor-pointer" 
+                        onclick="selectStaffForAction('<%= s.full_name %>', '<%= s.id %>')">
+                      <%= s.full_name %> - <%= s.number_phone %>
+                    </li>
+                  <% }) %>
+                </ul>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>`;
+    
+    $('#dynamicStaffModal').remove();
+    $('body').append(modalHtml);
+    $('#dynamicStaffModal').modal('show');
+  });
 
-    function renderInputs() {
-      const today = new Date()
-      const endDate = new Date(baoTriInput.value)
-      const monthInterval = parseInt(monthInput.value)
-      if (isNaN(monthInterval) || !baoTriInput.value || endDate <= today) {
-        resultDiv.innerHTML = ''
-        return
-      }
-      const resultHtml = []
-      let currentDate = new Date(today)
-      while (currentDate < endDate) {
-        currentDate.setMonth(currentDate.getMonth() + monthInterval)
-        if (currentDate <= endDate) {
-          resultHtml.push(`<div class="input-group" style="margin-bottom: 2px;"> <input type="date" class="form-control" name="timeMaintenance[]" value="${currentDate
-            .toISOString()
-            .slice(
-              0,
-              10,
-            )}"><input type="text" value="Bảo trì định kì" name="reason[]" class="form-control" >
- <span class="remove-btn btn btn-danger" onclick="removeInput(this)">x</span></div> `)
-        }
-      }
-      resultDiv.innerHTML = resultHtml.join('')
-    }
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = String(today.getMonth() + 1).padStart(2, '0')
-    const day = String(today.getDate()).padStart(2, '0')
-    const minDate = `${year}-${month}-${day}`
-    if (baoTriInput) baoTriInput.min = minDate
-  })
-
-  function addInput() {
-    const resultDiv = document.getElementById('result')
-    const newInput = document.createElement('div')
-    newInput.style.marginBottom = '2px'
-    newInput.className = 'input-group'
-    newInput.innerHTML = `<input type="date" class="form-control" name="timeMaintenance[]"> <input type="text" value="Bảo trì định kì" name="reason[]" class="form-control" > <span class="remove-btn btn btn-danger" onclick="removeInput(this)">x</span>`
-    resultDiv.appendChild(newInput)
-  }
-
-  function removeInput(element) {
-    element.parentElement.remove()
-  }
-  const addBaotriBtn = document.getElementById('AddBaotriBtn')
-  if (addBaotriBtn) {
-    addBaotriBtn.addEventListener('click', function() {
-      const form = document.getElementById('baotriForm')
-      if (form) {
-        if (form.style.display === 'none') {
-          form.style.display = 'block'
-        } else {
-          form.style.display = 'none'
-        }
-      }
-    })
+  function selectStaffForAction(name, id) {
+    $('#selectedStaffId').val(id);
+    $('#staff-search-input').val(name);
+    $('#staff-dropdown').hide();
+    if($('#staff-deadline').val()) $('.confirm-btn').prop('disabled', false);
   }
 
-  function toggleWarrantyStyle() {
-    const warrantyDiv = document.getElementById('add-warranty')
-    if (warrantyDiv.style.display === 'none') {
-      warrantyDiv.style.display = 'block'
-    } else {
-      warrantyDiv.style.display = 'none'
-    }
-  }
-  function updateWarrantyBadge() {
-    // ... logic existing in the view
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    document.body.addEventListener('click', function(e) {
-      const btn = e.target.closest('.save-actual-date');
-      if (!btn) return;
-      e.preventDefault();
-      
-      const id = btn.getAttribute('data-id');
-      const container = btn.closest('.d-flex');
-      const input = container ? container.querySelector('.actual-date-input') : null;
-      const actualDate = input ? input.value : '';
-      const originalHtml = btn.innerHTML;
-      
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      btn.disabled = true;
-      
-      fetch('/maintenance/actual-date/' + id, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ actualDate: actualDate })
-      })
-      .then(res => res.json())
-      .then(res => {
-        btn.innerHTML = originalHtml;
-        btn.disabled = false;
-        if (res.success) {
-          alert('Đã cập nhật ngày bảo trì thực tế thành công!');
-        } else {
-          alert('Cập nhật thất bại. Vui lòng thử lại.');
-        }
-      })
-      .catch(err => {
-        btn.innerHTML = originalHtml;
-        btn.disabled = false;
-        alert('Đã xảy ra lỗi khi cập nhật.');
-        console.error('Lỗi khi lưu actualDate:', err);
-      });
+  $(document).on('input', '#staff-search-input', function() {
+    const val = $(this).val().toLowerCase();
+    $('#staff-dropdown').show();
+    $('#staff-dropdown li').each(function() {
+      $(this).toggle($(this).text().toLowerCase().includes(val));
     });
   });
 </script>

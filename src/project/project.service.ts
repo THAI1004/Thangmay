@@ -438,4 +438,14 @@ async findAllByLocaltion(localtionName: string) {
   remove(id: number) {
     return `This action removes a #${id} project`
   }
+
+  async removeMaintenanceProject(id: number) {
+    const historyMaintenances = await this.historyMaintenanceRepository.find({
+      where: { project: { id } },
+    });
+    if (historyMaintenances.length > 0) {
+      await this.historyMaintenanceRepository.softRemove(historyMaintenances);
+    }
+    return this.projectRepository.softDelete(id);
+  }
 }

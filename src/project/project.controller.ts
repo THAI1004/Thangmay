@@ -1,5 +1,5 @@
 import { Maintenance } from 'src/maintenance/entities/maintenance.entity'
-import { Controller, Get, Post, Body, Patch, Param, Render, Res, Req, Query, SetMetadata } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Render, Res, Req, Query, SetMetadata, Delete } from '@nestjs/common'
 import { ProjectService } from './project.service'
 import { CreateProjectDto, CreateProjectMaintenanceDto } from './dto/create-project.dto'
 import { UpdateProjectDto } from './dto/update-project.dto'
@@ -126,7 +126,9 @@ export class ProjectController {
   @Get('add/maintenance')
   @Render('admin/projects/add_projects_maintenance')
   getAdd() {
-    return {}
+    return {
+      activeMenu: 'project/maintenance',
+    }
   }
 
   @Patch('SuccessProject/:id')
@@ -585,6 +587,18 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     return {
       projects,
       activeMenu: 'project/maintenance',
+    }
+  }
+
+  @Delete('/maintenance/:id')
+  async removeMaintenanceProject(@Param('id') id: string, @Res() res: Response) {
+    try {
+      await this.maintenanceService.removeAllByProjectId(+id);
+      await this.projectService.removeMaintenanceProject(+id);
+      return res.status(200).json({ status: 'success', message: 'Xóa thành công' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ status: 'error', message: error.message });
     }
   }
   @Get('/maintenance/:id')

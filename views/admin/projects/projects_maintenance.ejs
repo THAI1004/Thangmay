@@ -62,15 +62,19 @@
                     </td>
                     <td class="ttBaoTri">Mất phí</td>
                     <td class="action">
-                      <div class="table-data-feature">
+                      <div class="table-data-feature d-flex">
                         <a href="/project/maintenance/<%= project.id %>" class="item edit-btn btn-primary m-1"
                           data-toggle="tooltip" data-placement="top" title="Chỉnh sửa">
                           <i class="fas fa-edit"></i>
                         </a>
-                        <a href="/maintenance/project/<%= project.id %>" class="item delete-btn btn-danger m-1"
+                        <a href="/maintenance/project/<%= project.id %>" class="item m-1" style=" color: black; border: none;"
                           data-toggle="tooltip" data-placement="top" title="Bảo trì">
                           <i class="fas fa-wrench"></i>
                         </a>
+                        <button type="button" class="item delete-project-btn btn-danger m-1" data-id="<%= project.id %>"
+                          data-toggle="tooltip" data-placement="top" title="Xóa">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -117,6 +121,54 @@
       attributes: true, // theo dõi thuộc tính thay đổi
       characterData: true, // theo dõi textNode thay đổi
       subtree: true // theo dõi tất cả phần tử con
+    });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Use event delegation for dynamically updating tables
+      document.body.addEventListener('click', function (e) {
+        // Find if a delete-project-btn was clicked
+        const btn = e.target.closest('.delete-project-btn');
+        if (btn) {
+          const id = btn.getAttribute('data-id');
+          Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Hành động này sẽ xóa công trình và tất cả các lần bảo trì liên quan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Đồng ý, xóa!',
+            cancelButtonText: 'Hủy'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch(`/project/maintenance/${id}`, {
+                method: 'DELETE',
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  Swal.fire(
+                    'Đã xóa!',
+                    data.message,
+                    'success'
+                  ).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire('Lỗi!', data.message || 'Xóa thất bại', 'error');
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                Swal.fire('Lỗi!', 'Có lỗi xảy ra khi xóa.', 'error');
+              });
+            }
+          });
+        }
+      });
     });
   </script>
   <%- include('../../layout/footer') %>

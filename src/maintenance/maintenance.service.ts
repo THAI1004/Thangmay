@@ -198,4 +198,13 @@ export class MaintenanceService {
   async updateActualDate(id: number, actualDate: string | null) {
     return this.maintenanceRepository.update(id, { actualDate: actualDate as any })
   }
+
+  async removeAllByProjectId(projectId: number) {
+    const maintenances = await this.maintenanceRepository.find({
+      where: { project: { id: projectId } },
+    });
+    if (maintenances.length > 0) {
+      await this.maintenanceRepository.softRemove(maintenances);
+    }
+  }
 }
