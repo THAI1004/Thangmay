@@ -1,0 +1,26 @@
+{
+  "missingDelete": [
+    "app.controller.ts",
+    "maintenance_actions/maintenance_actions.controller.ts",
+    "permision/permision.controller.ts",
+    "positions/positions.controller.ts",
+    "project_edit/project_edit.controller.ts",
+    "project_steps/project_steps.controller.ts",
+    "steps/steps.controller.ts",
+    "target_busines/target_busines.controller.ts",
+    "workflows/workflows.controller.ts",
+    "workflow_steps/workflow_steps.controller.ts"
+  ],
+  "hasDelete": [
+    "client/client.controller.ts",
+    "customer/customer.controller.ts",
+    "departmens/departmens.controller.ts",
+    "departments_steps/departments_steps.controller.ts",
+    "history-maintenance/history-maintenance.controller.ts",
+    "maintenance/maintenance.controller.ts",
+    "notification/notification.controller.ts",
+    "project/project.controller.ts",
+    "project_staff/project_staff.controller.ts",
+    "staffs/staffs.controller.ts"
+  ]
+}

@@ -16,7 +16,13 @@ export class CustomerController {
 
   @Post()
   async create(@Res() res: Response, @Body() createCustomerDto: CreateCustomerDto) {
-    createCustomerDto.staff = await this.staffsService.findOne(+createCustomerDto.staffMain[0])
+    if (createCustomerDto.staffMain) {
+      const staffId = Array.isArray(createCustomerDto.staffMain)
+        ? createCustomerDto.staffMain[0]
+        : createCustomerDto.staffMain;
+      createCustomerDto.staff = await this.staffsService.findOne(+staffId);
+    }
+    console.log(createCustomerDto.staff);
     if (createCustomerDto.address) {
       createCustomerDto.address = `${createCustomerDto.city}, ${createCustomerDto.district},${createCustomerDto.ward}, ${createCustomerDto.address}`
     } else {
@@ -80,7 +86,10 @@ export class CustomerController {
   @Patch(':id')
   async update(@Res() res: Response, @Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
     if (updateCustomerDto.staffMain) {
-      updateCustomerDto.staffMain = await this.staffsService.findOne(+updateCustomerDto.staffMain[0])
+      const staffId = Array.isArray(updateCustomerDto.staffMain) 
+        ? updateCustomerDto.staffMain[0] 
+        : updateCustomerDto.staffMain;
+      updateCustomerDto.staffMain = await this.staffsService.findOne(+staffId);
     }
 
     if (updateCustomerDto.address) {

@@ -27,4 +27,9 @@ export class PositionsController {
     await this.positionsService.update(+id, updatePositionDto)
     return res.redirect('/positions')
   }
+  @SetMetadata('permision', 'VIEW_POSITIONS')
+  @Delete()
+  remove (@Body('id') id: string) {
+    return this.positionsService.remove(+id)
+  }
 }

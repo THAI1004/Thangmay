@@ -23,7 +23,17 @@
 
 <div class="card p-4">
   <div class="m-b-30">
-    <h4 id="maintenance-title">Danh sách lịch bảo trì</h4>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 id="maintenance-title" class="mb-0">Danh sách lịch bảo trì</h4>
+  <div class="d-flex gap-3 align-items-center">
+     <h5 class="mb-0 text-primary">Tổng số: <span id="total-count">0</span> công trình</h5>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <button id="btnExportExcel" class="btn btn-success btn-sm">
+      <i class="fas fa-file-excel me-1"></i> Xuất Excel
+    </button>
+  </div>
+ 
+</div>
     
     <div class="row mb-3">
       <div class="col-md-6">
@@ -98,7 +108,7 @@
       </div>
     </div>
 
-    <div id="tableExample3" data-list='{"valueNames":["duan","noidung","thoigian","nhanvien","trangthai","loai"],"page":20,"pagination":true}'>
+    <div id="tableExample3" data-list='{"valueNames":["stt","duan","noidung","thoigian","nhanvien","trangthai","loai"],"page":10,"pagination":true}'>
       <div class="row justify-content-end mb-3">
         <div class="col-auto">
           <div class="input-group">
@@ -112,6 +122,7 @@
         <table class="table table-bordered table-hover table-striped fs-10 mb-0">
           <thead class="bg-200">
             <tr>
+              <th class="sort" data-sort="stt">STT</th>
               <th class="sort" data-sort="duan">Công trình</th>
               <th class="sort" data-sort="noidung">Nội dung</th>
               <th class="sort" data-sort="thoigian">Thời gian</th>
@@ -124,6 +135,7 @@
             <% if (maintenanceWProjects && maintenanceWProjects.length > 0) { %>
               <% maintenanceWProjects.forEach(function(item, index) { %>
                 <tr data-item-date="<%= item.time %>">
+                  <td class="stt"><%= index + 1 %></td>
                   <td class="duan">
                     <%= item.project && item.project.full_name ? item.project.full_name : item.projectName %>
                   </td>
@@ -187,6 +199,7 @@
   }
 
   // Hàm lọc chính
+ // Hàm lọc chính
   function filterByMonthYear() {
     const selectedMonth = parseInt(document.getElementById('filterMonth').value);
     const selectedYear = parseInt(document.getElementById('filterYear').value);
@@ -194,14 +207,26 @@
     document.getElementById('maintenance-title').textContent = `Danh sách lịch bảo trì theo tháng ${selectedMonth}/${selectedYear}`;
 
     if (maintenanceList) {
+      let count = 0; // Khởi tạo biến đếm
+
       maintenanceList.filter(function(item) {
-        // Lấy ngày từ thuộc tính data của dòng (được List.js lưu trong elm)
+        // Lấy ngày từ thuộc tính data của dòng
         const dateStr = item.elm.getAttribute('data-item-date');
         if (!dateStr) return false;
 
         const d = new Date(dateStr);
-        return (d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear);
+        const isMatch = (d.getMonth() + 1 === selectedMonth && d.getFullYear() === selectedYear);
+        
+        // Nếu khớp với tháng/năm đang lọc thì tăng biến đếm
+        if (isMatch) {
+          count++;
+        }
+        
+        return isMatch;
       });
+
+      // Cập nhật tổng số lên giao diện
+      document.getElementById('total-count').textContent = count;
     }
   }
 
@@ -320,5 +345,76 @@
       $(this).toggle($(this).text().toLowerCase().includes(val));
     });
   });
+  document.getElementById('btnExportExcel').addEventListener('click', function() {
+  // 1. Lấy tháng và năm đang lọc
+  const month = document.getElementById('filterMonth').value;
+  const year = document.getElementById('filterYear').value;
+  const fileName = `Lich_Bao_Tri_Thang_${month}_${year}.xlsx`;
+
+  // 2. Thêm cột 'Nhân viên' vào tiêu đề Excel
+  let excelData = [
+    ['STT', 'Công trình', 'Nội dung', 'Thời gian', 'Nhân viên', 'Trạng thái', 'Loại phí']
+  ];
+
+  // Hàm hỗ trợ: Loại bỏ HTML cơ bản
+  const stripHTML = (html) => {
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || "").trim();
+  };
+
+  // Hàm hỗ trợ: Trích xuất riêng tên nhân viên (bỏ ảnh và nút +)
+  const extractStaffNames = (html) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    // Tìm các thẻ div chứa tên nhân viên (trong code HTML của bạn là thẻ div có class mb-1)
+    const staffDivs = doc.querySelectorAll('div.mb-1');
+    let names = [];
+    staffDivs.forEach(div => {
+      // Lấy text và loại bỏ khoảng trắng thừa
+      if (div.textContent.trim()) {
+        names.push(div.textContent.trim());
+      }
+    });
+    return names.join(', '); // Ngăn cách các nhân viên bằng dấu phẩy
+  };
+
+  // 3. Đổ dữ liệu từ List.js vào mảng Excel
+  if (maintenanceList && maintenanceList.matchingItems) {
+    maintenanceList.matchingItems.forEach((item, index) => {
+      const vals = item.values(); 
+      
+      excelData.push([
+        index + 1,
+        stripHTML(vals.duan),
+        stripHTML(vals.noidung),
+        stripHTML(vals.thoigian),
+        extractStaffNames(vals.nhanvien), // Sử dụng hàm bóc tách tên nhân viên
+        stripHTML(vals.trangthai),
+        stripHTML(vals.loai)
+      ]);
+    });
+  }
+
+  // 4. Khởi tạo file Excel và tải xuống
+  const ws = XLSX.utils.aoa_to_sheet(excelData); 
+  
+  // (Tuỳ chọn) Chỉnh lại độ rộng cột cho đẹp
+  ws['!cols'] = [
+    { wch: 5 },  // STT
+    { wch: 30 }, // Công trình
+    { wch: 30 }, // Nội dung
+    { wch: 15 }, // Thời gian
+    { wch: 25 }, // Nhân viên
+    { wch: 15 }, // Trạng thái
+    { wch: 15 }  // Loại phí
+  ];
+
+  const wb = XLSX.utils.book_new(); 
+  XLSX.utils.book_append_sheet(wb, ws, `Thang_${month}_${year}`); 
+  
+  // Xuất file
+  XLSX.writeFile(wb, fileName);
+});
 </script>
 <%- include('../../layout/footer') %>
