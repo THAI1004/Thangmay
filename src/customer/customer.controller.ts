@@ -5,6 +5,9 @@ import {UpdateCustomerDto} from './dto/update-customer.dto'
 import {Response, Request} from 'express'
 import {StaffsService} from 'src/staffs/staffs.service'
 import {DepartmensService} from 'src/departmens/departmens.service'
+import {NotificationService} from 'src/notification/notification.service'
+import {SendMailService} from 'src/send-mail/send-mail.service'
+import {MailerService} from '@nestjs-modules/mailer'
 
 @Controller('customer')
 export class CustomerController {
@@ -12,6 +15,9 @@ export class CustomerController {
     private readonly customerService: CustomerService,
     private readonly staffsService: StaffsService,
     private readonly departmensService: DepartmensService,
+    private readonly notificationService: NotificationService,
+    private readonly sendMailService: SendMailService,
+    private readonly mailerService: MailerService,
   ) {}
 
   @Post()
@@ -21,6 +27,23 @@ export class CustomerController {
         ? createCustomerDto.staffMain[0]
         : createCustomerDto.staffMain;
       createCustomerDto.staff = await this.staffsService.findOne(+staffId);
+      
+      if (createCustomerDto.staff) {
+        await this.notificationService.create({
+          title: 'Thông báo công trình dự kiến mới !!!',
+          message: `Bạn được giao phụ trách công trình dự kiến :${createCustomerDto.full_name}`,
+          staff: createCustomerDto.staff,
+          project: null,
+        });
+
+        const contentSendMail = await this.sendMailService.notificationNewProjectManager(
+          createCustomerDto.staff.full_name,
+          createCustomerDto.staff.email,
+          'Thông báo công trình dự kiến mới !!!',
+          `Chúng tôi xin thông báo bạn được giao phụ trách công trình dự kiến: <strong>${createCustomerDto.full_name}</strong>. Cảm ơn!`,
+        );
+        await this.mailerService.sendMail(contentSendMail).catch(e => console.error(e));
+      }
     }
     console.log(createCustomerDto.staff);
     if (createCustomerDto.address) {
@@ -85,11 +108,29 @@ export class CustomerController {
 
   @Patch(':id')
   async update(@Res() res: Response, @Param('id') id: string, @Body() updateCustomerDto: UpdateCustomerDto) {
-    if (updateCustomerDto.staffMain) {
-      const staffId = Array.isArray(updateCustomerDto.staffMain) 
-        ? updateCustomerDto.staffMain[0] 
-        : updateCustomerDto.staffMain;
-      updateCustomerDto.staffMain = await this.staffsService.findOne(+staffId);
+    const staffMainVal = (updateCustomerDto as any).staffMain;
+    if (staffMainVal) {
+      const staffId = Array.isArray(staffMainVal) 
+        ? staffMainVal[0] 
+        : staffMainVal;
+      updateCustomerDto.staff = await this.staffsService.findOne(+staffId);
+
+      if (updateCustomerDto.staff) {
+        await this.notificationService.create({
+          title: 'Thông báo công trình dự kiến mới !!!',
+          message: `Bạn được giao phụ trách công trình dự kiến :${updateCustomerDto.full_name || 'Đã cập nhật'}`,
+          staff: updateCustomerDto.staff,
+          project: null,
+        });
+
+        const contentSendMail = await this.sendMailService.notificationNewProjectManager(
+          updateCustomerDto.staff.full_name,
+          updateCustomerDto.staff.email,
+          'Thông báo công trình dự kiến mới !!!',
+          `Chúng tôi xin thông báo bạn được giao phụ trách công trình dự kiến: <strong>${updateCustomerDto.full_name || 'Đã cập nhật'}</strong>. Cảm ơn!`,
+        );
+        await this.mailerService.sendMail(contentSendMail).catch(e => console.error(e));
+      }
     }
 
     if (updateCustomerDto.address) {
@@ -97,7 +138,7 @@ export class CustomerController {
     } else {
       updateCustomerDto.address = `${updateCustomerDto.city}, ${updateCustomerDto.district},${updateCustomerDto.ward}`
     }
-    const {city, district, ward, ...newUpdateCustomerDto} = updateCustomerDto
+    const {city, district, ward, staffMain, ...newUpdateCustomerDto} = updateCustomerDto as any
     await this.customerService.update(+id, newUpdateCustomerDto)
     return res.redirect(`/customer/${id}`)
   }

@@ -162,7 +162,8 @@ export class MaintenanceController {
     const inforAccount = await this.staffsService.findOne(payload.id)
     let maintenanceWProjects = null
     let projects = null
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1)) {
+    const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'VIEW_MAINTENANCE_STATISTICS');
+    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
       maintenanceWProjects = await this.maintenanceService.findAll()
       projects = await this.projectService.findAll()
     } else {
@@ -218,6 +219,7 @@ export class MaintenanceController {
       return res.redirect('back')
     }
   }
+  @SetMetadata('permision', 'MANAGE_MAINTENANCE')
   @Get('classify')
   @Render('admin/maintenance/classify')
   async classify(){

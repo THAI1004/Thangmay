@@ -99,7 +99,7 @@ export class SendMailService {
           <p>Để bảo mật tài khoản vui lòng đổi mật khẩu trong lần đầu đang nhập.</p>
             <p>Để đang nhập vào hệ thống, vui lòng sử dụng mật khẩu mới dưới đây:</p>
             <div class="password">${password}</div>
-          <a class="password" style="text-decoration: none; background-color: #007bff; color: white;" href="wavebear.xyz/login">Đang nhập ngay</a>
+          <a class="password" style="text-decoration: none; background-color: #007bff; color: white;" href="thangmaytesla.asia/login">Đang nhập ngay</a>
           </div>
           <div class="footer">
             <p>Chúc bạn một ngày tốt lành!<br> Đội ngũ <strong>Thang Máy Tesla</strong></p>

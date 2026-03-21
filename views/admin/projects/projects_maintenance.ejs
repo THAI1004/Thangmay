@@ -4,7 +4,7 @@
       aria-labelledby="tab-dom-da4be276-f13c-47d6-be82-655bc6452fd5" id="dom-da4be276-f13c-47d6-be82-655bc6452fd5">
       <h4 class="mt-3">Danh sách công trình bảo trì có thu phí</h4>
       <div id="tableExample3"
-        data-list='{"valueNames":["stt","duan","phone","address","ttBaoTri","action"],"page":20,"pagination":true}'>
+        data-list='{"valueNames":["stt","code","duan","phone","address","ttBaoTri","action"],"page":20,"pagination":true}'>
         <div class="m-b-30">
           <a href="/project/add/maintenance" type="button" class="btn btn-primary thead-backgroup" id="add-new-project">
             <i class="fas fa-plus-square"></i>&nbsp; Thêm mới</a>
@@ -26,7 +26,7 @@
             <thead class="bg-200">
               <tr>
                 <th class="text-900 sort" data-sort="stt">STT</th>
-                <th class="text-900 sort" data-sort="duan">Mã</th>
+                <th class="text-900 sort" data-sort="code">Mã</th>
                 <th class="text-900 sort" data-sort="duan">Công trình</th>
                 <th class="text-900 sort" data-sort="phone">Số điện thoại</th>
                 <th class="text-900 sort" data-sort="address">Địa chỉ</th>
@@ -48,7 +48,7 @@
                     <td class="stt">
                       <%= stt +=1 %>
                     </td>
-                    <td class="duan">
+                    <td class="code">
                       <%= project.code_project %>
                     </td>
                     <td class="duan">

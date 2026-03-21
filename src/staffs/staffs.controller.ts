@@ -88,7 +88,7 @@ export class StaffsController {
     }else{
       createStaffDto.avatar = 'default-avatar.png'
     }
-    const kyTu = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?'
+    const kyTu = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%'
     let matKhau = ''
     for (let i = 0; i < 8; i++) {
       const randomIndex = Math.floor(Math.random() * kyTu.length)

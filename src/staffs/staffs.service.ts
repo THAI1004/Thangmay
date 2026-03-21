@@ -140,9 +140,10 @@ export class StaffsService {
     return this.staffsRepository.findOne({where: {email}})
   }
   async login (loginDto: LoginDto) {
-    console.log('[DEBUG] Trying to login with email:', loginDto.email);
+    const emailStr = loginDto.email ? loginDto.email.trim() : loginDto.email;
+    console.log('[DEBUG] Trying to login with email:', emailStr);
     const staff = await this.staffsRepository.findOne({
-      where: {email: loginDto.email}, // Removed status strict check to see if it exists
+      where: {email: emailStr}, // Removed status strict check to see if it exists
       relations: ['department', 'position'],
     })
     console.log('[DEBUG] Staff found:', staff ? `Yes, status: ${staff.status}` : 'No');
@@ -153,7 +154,12 @@ export class StaffsService {
       console.log('[DEBUG] Staff exists but status is false');
       return false;
     }
-    const isPasswordValid = await bcrypt.compare(loginDto.password, staff.password)
+    
+    // Trim password to handle leading/trailing spaces when copied from email
+    const trimmedPassword = loginDto.password ? loginDto.password.trim() : loginDto.password;
+    console.log('[DEBUG] Password valid check - Original input length:', loginDto.password?.length, 'Trimmed length:', trimmedPassword?.length);
+    
+    const isPasswordValid = await bcrypt.compare(trimmedPassword, staff.password)
     console.log('[DEBUG] Password valid:', isPasswordValid);
     if (!isPasswordValid) {
       return false

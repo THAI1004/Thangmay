@@ -104,7 +104,15 @@ export class AppController {
   @Post('login')
   @SetMetadata('isPublic', true)
   async login (@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: Request) {
-    const token = await this.staffsService.login(loginDto)
+    console.log('[DEBUG-CTRL] 1. Calling staffsService.login...');
+    let token;
+    try {
+      token = await this.staffsService.login(loginDto)
+    } catch(e) {
+      console.log('[DEBUG-CTRL] Error in staffsService.login:', e.message);
+      throw e;
+    }
+    console.log('[DEBUG-CTRL] 2. Has token:', !!token);
     if (!token) {
       res.render('login', {
         message: 'Email hoặc mật khẩu không hợp lệ!',
@@ -112,11 +120,20 @@ export class AppController {
       })
     } else {
       res.cookie('token', token)
-      const payload = await this.staffsService.payload(token)
-      if (payload.role_admin) {
-        res.redirect('/')
-      } else {
-        res.redirect('/client/list-task')
+      console.log('[DEBUG-CTRL] 3. Verifying payload...');
+      try {
+        const payload = await this.staffsService.payload(token)
+        console.log('[DEBUG-CTRL] 4. Payload retrieved:', payload?.email);
+        if (payload.role_admin) {
+          console.log('[DEBUG-CTRL] 5. Redirecting admin...');
+          res.redirect('/')
+        } else {
+          console.log('[DEBUG-CTRL] 5. Redirecting staff...');
+          res.redirect('/client/list-task')
+        }
+      } catch(err) {
+        console.log('[DEBUG-CTRL] Error measuring payload:', err.message);
+        throw err;
       }
     }
   }

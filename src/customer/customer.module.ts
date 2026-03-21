@@ -6,10 +6,12 @@ import { Customer } from './entities/customer.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StaffsService } from 'src/staffs/staffs.service';
 import { StaffsModule } from 'src/staffs/staffs.module';
+import { NotificationModule } from 'src/notification/notification.module';
+import { SendMailService } from 'src/send-mail/send-mail.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Customer]),StaffsModule,DepartmensModule],
+  imports: [TypeOrmModule.forFeature([Customer]),StaffsModule,DepartmensModule,NotificationModule],
   controllers: [CustomerController],
-  providers: [CustomerService],
+  providers: [CustomerService, SendMailService],
 })
 export class CustomerModule {}

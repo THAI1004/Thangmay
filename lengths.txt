@@ -1,0 +1,28 @@
+{
+  "rows": [
+    {
+      "email": "thaizzbbl@gmail.com",
+      "len": 60
+    },
+    {
+      "email": "Nguyenhunganh14051992@gmail.com",
+      "len": 60
+    },
+    {
+      "email": "vivilyen@gmail.com",
+      "len": 60
+    },
+    {
+      "email": "quangkd116@gmail.com",
+      "len": 60
+    },
+    {
+      "email": "duongnguyenqptb@gmail.com",
+      "len": 60
+    }
+  ],
+  "admin": {
+    "email": "admin@gmail.com",
+    "len": 60
+  }
+}

@@ -237,19 +237,21 @@ export class ProjectController {
         const result = [...new Set([...arr, ...duplicates])]
         const result2 = result.filter((item) => item !== '')
         if (result2.length > 0) {
-          result.forEach(async (staff) => {
+          for (const staff of result2) {
             const Staff = await this.staffsService.findOne(+staff)
-            await this.notificationService.create({
-              title: 'Thông báo công trình mới !!!',
-              message: `Bạn được giao phụ trách tại công trình :${Project.full_name}`,
-              staff: Staff,
-              project: Project,
-            })
-            await this.projectStaffService.create({
-              project: Project,
-              staff: Staff,
-            })
-          })
+            if (Staff) {
+              await this.notificationService.create({
+                title: 'Thông báo công trình mới !!!',
+                message: `Bạn được giao phụ trách tại công trình :${Project.full_name}`,
+                staff: Staff,
+                project: Project,
+              })
+              await this.projectStaffService.create({
+                project: Project,
+                staff: Staff,
+              })
+            }
+          }
         }
       }
     }
@@ -337,35 +339,34 @@ export class ProjectController {
         console.log(result2)
         console.log(result2.length)
         if (result2.length > 0) {
-          result.forEach(async (staff) => {
+          for (const staff of result2) {
             const Staff = await this.staffsService.findOne(+staff)
-            await this.notificationService.create({
-              title: 'Thông báo công trình mới !!!',
-              message: `Bạn được giao phụ trách tại công trình :${project.full_name}`,
-              staff: Staff,
-              project: project,
-            })
+            if (Staff) {
+              await this.notificationService.create({
+                title: 'Thông báo công trình mới !!!',
+                message: `Bạn được giao phụ trách tại công trình :${project.full_name}`,
+                staff: Staff,
+                project: project,
+              })
 
-            // SEND MAIL
-const contentSendMail = await this.sendMailService.notificationNewProjectManager(
-  Staff.full_name,
-  Staff.email,
-  'Thông báo công trình phụ trách mới !!!',
-  `Chúng tôi xin thông báo về công trình phụ trách mới của bạn tại <strong>Thang máy Tesla </strong> <br> <div class="password">Bạn cần phụ trách công trình:${project.full_name}</div> `,
-)
-            this.mailerService
-            .sendMail(contentSendMail)
-            .then(() => { })
-            .catch((error) => {
-              console.error('Error sending email:', error)
-              return { message: 'Gửi mail thất bại!', error: error.message }
-            })
+              // SEND MAIL
+              const contentSendMail = await this.sendMailService.notificationNewProjectManager(
+                Staff.full_name,
+                Staff.email,
+                'Thông báo công trình phụ trách mới !!!',
+                `Chúng tôi xin thông báo về công trình phụ trách mới của bạn tại <strong>Thang máy Tesla </strong> <br> <div class="password">Bạn cần phụ trách công trình:${project.full_name}</div> `,
+              )
+              
+              await this.mailerService.sendMail(contentSendMail).catch((error) => {
+                console.error('Error sending email:', error)
+              })
 
-            await this.projectStaffService.create({
-              project: project,
-              staff: Staff,
-            })
-          })
+              await this.projectStaffService.create({
+                project: project,
+                staff: Staff,
+              })
+            }
+          }
         }
       }
     }
@@ -563,7 +564,8 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     } else if (status == 'dang-thuc-hien') {
       status2 = 0
     }
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1)) {
+    const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
+    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
       projects = await this.projectService.findAllStatus(status2)
     } else {
       projects = await this.projectService.findByStaffId(inforAccount.id, status2)
@@ -572,6 +574,7 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
       projects,
     }
   }
+  @SetMetadata('permision', 'MANAGE_MAINTENANCE')
   @Get('/maintenance')
   @Render('admin/projects/projects_maintenance')
   async filterProjectsMaintennce(@Param('status') status: string, @Req() req: Request) {
@@ -579,7 +582,8 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     const payload = await this.staffsService.payload(token)
     const inforAccount = await this.staffsService.findOne(payload.id)
     let projects = null
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1)) {
+    const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
+    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
       projects = await this.projectService.findAllProjectsMaintennce()
     } else {
       projects = await this.projectService.findProjectsMaintennceByStaffId(inforAccount.id)
@@ -590,6 +594,7 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     }
   }
 
+  @SetMetadata('permision', 'MANAGE_MAINTENANCE')
   @Get('/maintenance-free')
   @Render('admin/projects/projects_maintenance_free')
   async filterProjectsMaintenanceFree(@Req() req: Request) {
@@ -597,7 +602,8 @@ const contentSendMail = await this.sendMailService.notificationNewProjectManager
     const payload = await this.staffsService.payload(token)
     const inforAccount = await this.staffsService.findOne(payload.id)
     let projects = null
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1)) {
+    const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
+    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
       projects = await this.projectService.findAllProjectsMaintenanceFree()
     } else {
       projects = await this.projectService.findProjectsMaintenanceFreeByStaffId(inforAccount.id)

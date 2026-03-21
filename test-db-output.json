@@ -1,0 +1,27 @@
+[
+  {
+    "id": 25,
+    "email": "thaizzbbl@gmail.com",
+    "password": "$2b$10$5A806euno.mcC1lz.pNjMewfCOntB5lvsEW81X9OtRkgVAkNy4Y2W"
+  },
+  {
+    "id": 9,
+    "email": "Nguyenhunganh14051992@gmail.com",
+    "password": "$2b$10$.OW.6q//3vT5eN9wG9lnM.zPPvo0LoCXtfEKSlDO5BYYP5GXY/uZS"
+  },
+  {
+    "id": 8,
+    "email": "vivilyen@gmail.com",
+    "password": "$2b$10$8oQUp5VRfSQDtILsRmuN2uiUntUQbSHdMCaCreqfdj35bH0BLtz1e"
+  },
+  {
+    "id": 7,
+    "email": "quangkd116@gmail.com",
+    "password": "$2b$10$ZLWqgURUUL0I28IdmP9AfO9HPIk7X2SFinu0R16swyy4mwJsJp716"
+  },
+  {
+    "id": 6,
+    "email": "duongnguyenqptb@gmail.com",
+    "password": "$2b$10$7upVEl6UcOfSTIccQFCr5eZPaGFC6TvOASyoYJPUvJHKOVfXHtvP6"
+  }
+]
