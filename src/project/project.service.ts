@@ -18,84 +18,141 @@ export class ProjectService {
 
 
 
-async findAllByLocaltion(localtionName: string) {
-  try {
-    let histories = []
-    const toDay = new Date()
+  async findAllByLocaltion(localtionName: string, type: string) {
+    try {
+      const toDay = new Date();
+      let projects = [];
 
-    // ✅ Query theo địa điểm
-    if (localtionName === 'Tỉnh thành khác') {
-      histories = await this.historyMaintenanceRepository.find({
-        relations: ['project', 'maintenance', 'maintenance.maintenanceActions'],
-        where: {
-          timeStart: LessThan(toDay),
-          timeEnd: MoreThan(toDay),
-          project: {
-            address: Like(`%${localtionName}%`),
+      if (type === 'warranty') {
+        projects = await this.projectRepository.find({
+          where: {
+            warrantyStart: LessThan(toDay),
+            warrantyEnd: MoreThan(toDay),
           },
-        },
-      })
-    } else if (localtionName === 'Hà Nội' || localtionName === 'Quảng Ninh') {
-      histories = await this.historyMaintenanceRepository.find({
-        relations: ['project', 'maintenance', 'maintenance.maintenanceActions'],
-        where: {
-          timeStart: LessThan(toDay),
-          timeEnd: MoreThan(toDay),
-          project: {
-            address: Like(`%${localtionName}%`),
+          relations: ['historyMaintenance', 'historyMaintenance.maintenance', 'historyMaintenance.maintenance.maintenanceActions'],
+        });
+      } else if (type === 'free') {
+        projects = await this.projectRepository.find({
+          where: {
+            historyMaintenance: {
+              timeStart: LessThan(toDay),
+              timeEnd: MoreThan(toDay),
+              free: true,
+            },
           },
-        },
-      })
-    }
+          relations: ['historyMaintenance', 'historyMaintenance.maintenance', 'historyMaintenance.maintenance.maintenanceActions'],
+        });
+      } else if (type === 'fee') {
+        projects = await this.projectRepository.find({
+          where: {
+            historyMaintenance: {
+              timeStart: LessThan(toDay),
+              timeEnd: MoreThan(toDay),
+              free: false,
+            },
+          },
+          relations: ['historyMaintenance', 'historyMaintenance.maintenance', 'historyMaintenance.maintenance.maintenanceActions'],
+        });
+      } else {
+        // Fallback for requests without type
+        projects = await this.projectRepository.find({
+          where: {
+            historyMaintenance: {
+              timeStart: LessThan(toDay),
+              timeEnd: MoreThan(toDay),
+            },
+          },
+          relations: ['historyMaintenance', 'historyMaintenance.maintenance', 'historyMaintenance.maintenance.maintenanceActions'],
+        });
+      }
 
-    if (!histories || histories.length === 0) return []
+      // ✅ Map and filter
+      // Explicit deduplication
+      const uniqueProjectsMap = new Map();
+      projects.forEach(p => uniqueProjectsMap.set(p.id, p));
+      projects = Array.from(uniqueProjectsMap.values());
 
-    // ✅ Xử lý kết quả
-    const result = histories.map((history) => {
-      let countMaintenanceAllActionsStatusNotNull = 0
-
-      // Trường hợp maintenance là 1 object
-      if (history.maintenance && !Array.isArray(history.maintenance)) {
-        const maint = history.maintenance
-        if (
-          maint.maintenanceActions &&
-          Array.isArray(maint.maintenanceActions) &&
-          maint.maintenanceActions.length > 0 &&
-          maint.maintenanceActions.every(
-            (action) => action.status !== null && action.status !== undefined,
-          )
-        ) {
-          countMaintenanceAllActionsStatusNotNull = 1
+      let filteredProjects = [];
+      projects.forEach((element) => {
+        const addr = element.address ? element.address.toUpperCase() : '';
+        const isQuangNinh = addr.includes('QUẢNG NINH');
+        const isHaNoi = !isQuangNinh && addr.includes('HÀ NỘI');
+        const isKhac = !isQuangNinh && !isHaNoi;
+        
+        if (localtionName === 'Quảng Ninh' && isQuangNinh) {
+          filteredProjects.push(element);
+        } else if (localtionName === 'Hà Nội' && isHaNoi) {
+          filteredProjects.push(element);
+        } else if (localtionName === 'Tỉnh thành khác' && isKhac) {
+          filteredProjects.push(element);
         }
-      }
+      });
 
-      // Trường hợp maintenance là mảng
-      if (Array.isArray(history.maintenance)) {
-        history.maintenance.forEach((maint) => {
-          if (
-            maint.maintenanceActions &&
-            Array.isArray(maint.maintenanceActions) &&
-            maint.maintenanceActions.length > 0 &&
-            maint.maintenanceActions.every(
-              (action) => action.status !== null && action.status !== undefined,
-            )
-          ) {
-            countMaintenanceAllActionsStatusNotNull += 1
+      const result = filteredProjects.map((proj) => {
+        let countMaintenanceAllActionsStatusNotNull = 0;
+        
+        let activeHistory = null;
+        if (proj.historyMaintenance && proj.historyMaintenance.length > 0) {
+           activeHistory = proj.historyMaintenance.find(h => {
+              const start = new Date(h.timeStart);
+              const end = new Date(h.timeEnd);
+              if (start >= toDay || end <= toDay) return false;
+              if (type === 'free' && h.free !== true) return false;
+              if (type === 'fee' && h.free !== false) return false;
+              return true;
+           });
+        }
+        
+        if (activeHistory) {
+          // Maintenance object logic
+          if (activeHistory.maintenance && !Array.isArray(activeHistory.maintenance)) {
+            const maint = activeHistory.maintenance as any;
+            if (
+              maint.maintenanceActions &&
+              Array.isArray(maint.maintenanceActions) &&
+              maint.maintenanceActions.length > 0 &&
+              maint.maintenanceActions.every(
+                (action) => action.status !== null && action.status !== undefined,
+              )
+            ) {
+              countMaintenanceAllActionsStatusNotNull = 1;
+            }
           }
-        })
-      }
 
-      return {
-        ...history,
-        countMaintenanceAllActionsStatusNotNull,
-      }
-    })
+          // Maintenance array logic
+          if (Array.isArray(activeHistory.maintenance)) {
+            activeHistory.maintenance.forEach((maint) => {
+              if (
+                maint.maintenanceActions &&
+                Array.isArray(maint.maintenanceActions) &&
+                maint.maintenanceActions.length > 0 &&
+                maint.maintenanceActions.every(
+                  (action) => action.status !== null && action.status !== undefined,
+                )
+              ) {
+                countMaintenanceAllActionsStatusNotNull += 1;
+              }
+            });
+          }
+        }
+        
+        return {
+          project: proj,
+          free: activeHistory ? activeHistory.free : (type === 'fee' ? false : true),
+          timeStart: activeHistory ? activeHistory.timeStart : proj.warrantyStart,
+          timeEnd: activeHistory ? activeHistory.timeEnd : proj.warrantyEnd,
+          countMaintenance: activeHistory ? activeHistory.countMaintenance : 0,
+          maintenance: activeHistory && activeHistory.maintenance ? activeHistory.maintenance : [],
+          countMaintenanceAllActionsStatusNotNull,
+        };
+      });
 
-    return result
-  } catch (error) {
-    console.error('❌ Lỗi tại findAllByLocaltion:', error)
+      return result;
+    } catch (error) {
+      console.error('❌ Lỗi tại findAllByLocaltion:', error);
+      return [];
+    }
   }
-}
 
   async statisticalMaintenance() {
     const toDay = new Date()

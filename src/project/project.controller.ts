@@ -38,8 +38,8 @@ export class ProjectController {
   ) { }
   @Get('/maintenance/localtion/:localtionName')
   @Render('admin/maintenance/maintenance_localtion')
-  async filterMaintenanceByLocaltion(@Param('localtionName') localtionName: string, @Req() req: Request) {
-    const maintenances = await this.projectService.findAllByLocaltion(localtionName)
+  async filterMaintenanceByLocaltion(@Param('localtionName') localtionName: string, @Query('type') type: string, @Req() req: Request) {
+    const maintenances = await this.projectService.findAllByLocaltion(localtionName, type)
     return { localtionName, maintenances, activeMenu: 'VIEW_PROJECT_STATISTICS' }
   }
   @SetMetadata('permision', 'VIEW_PROJECT_STATISTICS')
@@ -91,14 +91,14 @@ export class ProjectController {
     // Nhóm 2: Bảo trì theo HĐ
     addGroupRow(
       '2',
-      'Tổng số lượng thang máy trong thời gian bảo trì có thu phí',
+      'Tổng số lượng thang máy trong thời gian bảo trì không thu phí',
       statisticalMaintenanceFree.tong,
     )
     addNormalRow('2.1', 'Hà Nội', statisticalMaintenanceFree.haNoi)
     addNormalRow('2.2', 'Quảng Ninh', statisticalMaintenanceFree.quangNinh)
     addNormalRow('2.3', 'Khác', statisticalMaintenanceFree.khac)
     // Nhóm 3: Bảo trì mất phí
-    addGroupRow('3', 'Tổng số lượng thang máy trong thời gian bảo trì không thu phí', statisticalMaintenance.tong)
+    addGroupRow('3', 'Tổng số lượng thang máy trong thời gian bảo trì có thu phí', statisticalMaintenance.tong)
     addNormalRow('3.1', 'Hà Nội', statisticalMaintenance.haNoi)
     addNormalRow('3.2', 'Quảng Ninh', statisticalMaintenance.quangNinh)
     addNormalRow('3.3', 'Khác', statisticalMaintenance.khac)
