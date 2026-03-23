@@ -26,7 +26,7 @@ export class ProjectService {
       if (type === 'warranty') {
         projects = await this.projectRepository.find({
           where: {
-            warrantyStart: LessThan(toDay),
+
             warrantyEnd: MoreThan(toDay),
           },
           relations: ['historyMaintenance', 'historyMaintenance.maintenance', 'historyMaintenance.maintenance.maintenanceActions'],
@@ -35,7 +35,7 @@ export class ProjectService {
         projects = await this.projectRepository.find({
           where: {
             historyMaintenance: {
-              timeStart: LessThan(toDay),
+
               timeEnd: MoreThan(toDay),
               free: true,
             },
@@ -46,7 +46,7 @@ export class ProjectService {
         projects = await this.projectRepository.find({
           where: {
             historyMaintenance: {
-              timeStart: LessThan(toDay),
+
               timeEnd: MoreThan(toDay),
               free: false,
             },
@@ -58,7 +58,7 @@ export class ProjectService {
         projects = await this.projectRepository.find({
           where: {
             historyMaintenance: {
-              timeStart: LessThan(toDay),
+
               timeEnd: MoreThan(toDay),
             },
           },
@@ -96,7 +96,7 @@ export class ProjectService {
            activeHistory = proj.historyMaintenance.find(h => {
               const start = new Date(h.timeStart);
               const end = new Date(h.timeEnd);
-              if (start >= toDay || end <= toDay) return false;
+              if (end <= toDay) return false;
               if (type === 'free' && h.free !== true) return false;
               if (type === 'fee' && h.free !== false) return false;
               return true;
@@ -168,7 +168,7 @@ export class ProjectService {
     const projects = await this.projectRepository.find({
       where: {
         historyMaintenance: {
-          timeStart: LessThan(toDay),
+
           timeEnd: MoreThan(toDay),
           free: false,
         },
@@ -200,7 +200,7 @@ export class ProjectService {
     const project = await this.projectRepository.find({
       where: {
         historyMaintenance: {
-          timeStart: LessThan(toDay),
+
           timeEnd: MoreThan(toDay),
           free: true,
         },
@@ -232,7 +232,7 @@ export class ProjectService {
     const toDay = new Date()
     const project = await this.projectRepository.find({
       where: {
-        warrantyStart: LessThan(toDay),
+
         warrantyEnd: MoreThan(toDay),
       },
     })
@@ -388,9 +388,9 @@ export class ProjectService {
         project: project,
         timeStart: createProjectMaintenanceDto.timeStart,
         timeEnd: createProjectMaintenanceDto.timeEnd,
-        price: createProjectMaintenanceDto.free ? 0 : createProjectMaintenanceDto.price_maintenance,
+        price: (String(createProjectMaintenanceDto.free) === 'true') ? 0 : createProjectMaintenanceDto.price_maintenance,
         countMaintenance: createProjectMaintenanceDto.countMaintenance,
-        free: createProjectMaintenanceDto.free,
+        free: (String(createProjectMaintenanceDto.free) === 'true'),
       });
 
       return project;
@@ -436,7 +436,6 @@ export class ProjectService {
       where: {
         type: 'BAOTRI',
         historyMaintenance: {
-          timeStart: LessThan(toDay),
           timeEnd: MoreThan(toDay),
           free: true,
         },
@@ -451,7 +450,6 @@ export class ProjectService {
       where: {
         type: 'BAOTRI',
         historyMaintenance: {
-          timeStart: LessThan(toDay),
           timeEnd: MoreThan(toDay),
           free: false,
         },
@@ -499,7 +497,6 @@ export class ProjectService {
           },
         },
         historyMaintenance: {
-          timeStart: LessThan(toDay),
           timeEnd: MoreThan(toDay),
           free: true,
         },
@@ -519,7 +516,6 @@ export class ProjectService {
           },
         },
         historyMaintenance: {
-          timeStart: LessThan(toDay),
           timeEnd: MoreThan(toDay),
           free: false,
         },
