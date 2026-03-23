@@ -1,5 +1,5 @@
 import {Transform} from 'class-transformer'
-import {IsNotEmpty, IsOptional, IsPhoneNumber, IsEmail, IsString, MaxLength, IsNumber, IsArray, IsEnum} from 'class-validator'
+import {IsNotEmpty, IsOptional, IsPhoneNumber, IsEmail, IsString, MaxLength, IsNumber, IsArray, IsEnum, IsBoolean, IsDateString} from 'class-validator'
 export class CreateProjectDto {
   @IsNotEmpty({message: 'Quy trình lắp đặt không được để trống'})
   workflow: number
@@ -168,5 +168,28 @@ export class CreateProjectMaintenanceDto
   city: string
   district: string
   ward: string
+
+  @IsOptional()
+  @Transform(({value}) => value === 'true' || value === true)
+  @IsBoolean()
+  free?: boolean
+
+  @IsOptional()
+  @Transform(({value}) => Number(value))
+  @IsNumber()
+  price_maintenance?: number
+
+  @IsNotEmpty({message: 'Thời gian bắt đầu không được để trống'})
+  @IsDateString({}, {message: 'Nhập thời gian bắt đầu hợp lệ'})
+  timeStart: string
+
+  @IsNotEmpty({message: 'Thời gian kết thúc không được để trống'})
+  @IsDateString({}, {message: 'Nhập thời gian kết thúc hợp lệ'})
+  timeEnd: string
+
+  @IsNotEmpty({message: 'Số lần bảo trì không được để trống'})
+  @Transform(({value}) => Number(value))
+  @IsNumber()
+  countMaintenance: number
 
 }

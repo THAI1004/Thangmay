@@ -227,7 +227,10 @@ export class ProjectController {
     const payload = await this.staffsService.payload(token)
     const inforAccount = await this.staffsService.findOne(payload.id)
     const arr = createProjectDto.staffMain
-    if (inforAccount.department.id == 1 && inforAccount.position.id == 1) {
+    const hasPermissionProject = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
+    const hasPermissionMaintenance = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
+    const isAdmin = inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermissionProject || hasPermissionMaintenance;
+    if (isAdmin) {
       if (arr != null && arr.length > 0) {
         const count = arr.reduce((acc, num) => {
           acc[num] = (acc[num] || 0) + 1
@@ -327,7 +330,12 @@ export class ProjectController {
     const token = req.cookies['token']
     const payload = await this.staffsService.payload(token)
     const inforAccount = await this.staffsService.findOne(payload.id)
-    if (inforAccount.department.id == 1 && inforAccount.position.id == 1) {
+    
+    const hasPermissionProject = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
+    const hasPermissionMaintenance = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
+    const isAdmin = inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermissionProject || hasPermissionMaintenance;
+
+    if (isAdmin) {
       if (arr != null && arr.length > 0) {
         const count = arr.reduce((acc, num) => {
           acc[num] = (acc[num] || 0) + 1
@@ -382,7 +390,7 @@ export class ProjectController {
       oh: updateProjectDto.oh,
       phongMay: updateProjectDto.phongMay,
     }
-    if (inforAccount.department.id == 1 && inforAccount.position.id == 1) {
+    if (isAdmin) {
       await this.projectService.update(+id, {
         code_project: updateProjectDto.code_project,
         full_name: updateProjectDto.full_name,
@@ -394,6 +402,9 @@ export class ProjectController {
         description: updateProjectDto.description,
         infor_product: JSON.stringify(infor_product),
       })
+      if (updateProjectDto['historyMaintenanceId']) {
+        await this.projectService.updateHistoryMaintenance(+updateProjectDto['historyMaintenanceId'], updateProjectDto)
+      }
     } else {
       const token = req.cookies['token']
       const payload = await this.staffsService.payload(token)
@@ -626,6 +637,7 @@ export class ProjectController {
       return res.status(500).json({ status: 'error', message: error.message });
     }
   }
+  @SetMetadata('permision', 'MANAGE_MAINTENANCE')
   @Get('/maintenance/:id')
   @Render('admin/projects/edit_project_maintenance')
   async findOneMaintenance(@Param('id') id: number, @Req() req: Request) {

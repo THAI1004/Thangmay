@@ -71,6 +71,44 @@
               </select>
             </div>
           </div>
+          
+          <h5 class="mt-4 mb-3">Thông tin gia hạn bảo trì (Bắt buộc)</h5>
+          <div class="row">
+            <div class="form-group col-4 mb-3" id="fee-group">
+              <label for="feeSelect" class="form-label">Loại phí:</label>
+              <select name="free" id="feeSelect" class="form-control">
+                <option value="true" selected>Miễn phí</option>
+                <option value="false">Mất phí</option>
+              </select>
+            </div>
+            <div class="form-group col-4 mb-3" id="price-group" style="display: none;">
+              <label class="form-label">Phí bảo trì:</label>
+              <input type="text" class="form-control" value="0" onkeyup="formatCurrencyMaintenance(this)">
+              <input type="hidden" id="price_m_value" name="price_maintenance" value="0">
+              <script>
+                function formatCurrencyMaintenance(input) {
+                  let value = input.value.replace(/\D/g, '');
+                  input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                  document.getElementById('price_m_value').value = value;
+                }
+              </script>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-4">
+              <label for="date-time">Thời gian bắt đầu <span style="color: red">*</span>:</label>
+              <input type="date" class="form-control" name="timeStart" required>
+            </div>
+            <div class="form-group col-4">
+              <label for="date-time">Thời gian kết thúc <span style="color: red">*</span>:</label>
+              <input type="date" class="form-control" name="timeEnd" required>
+            </div>
+            <div class="form-group col-4">
+              <label for="date-time">Số lần bảo trì <span style="color: red">*</span>:</label>
+              <input type="number" class="form-control" name="countMaintenance" required min="1">
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="description">Ghi chú</label>
             <textarea id="description" placeholder="Enter Description" name="description" class="form-control" maxlength="225"></textarea>
@@ -206,6 +244,14 @@
       $("#result").text(result)
     }
   }
+
+  $('#feeSelect').on('change', function () {
+    if ($(this).val() === 'true') {
+      $('#price-group').hide();
+    } else {
+      $('#price-group').show();
+    }
+  });
 </script>
 
 <%- include('../../layout/footer') %>

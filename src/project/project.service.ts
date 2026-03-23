@@ -370,9 +370,9 @@ export class ProjectService {
       console.log('🔴 ~ file: project.service.ts ~ line 116 ~ ProjectService ~ create ~ error', error)
     }
   }
-  createProjectMaintenance(createProjectMaintenanceDto: CreateProjectMaintenanceDto) {
+  async createProjectMaintenance(createProjectMaintenanceDto: CreateProjectMaintenanceDto) {
     try {
-      return this.projectRepository.save({
+      const project = await this.projectRepository.save({
         code_project: createProjectMaintenanceDto.code_project,
         full_name: createProjectMaintenanceDto.full_name,
         tax: createProjectMaintenanceDto.tax,
@@ -383,6 +383,17 @@ export class ProjectService {
         infor_product: createProjectMaintenanceDto.infor_product,
         type: 'BAOTRI',
       })
+
+      await this.historyMaintenanceRepository.save({
+        project: project,
+        timeStart: createProjectMaintenanceDto.timeStart,
+        timeEnd: createProjectMaintenanceDto.timeEnd,
+        price: createProjectMaintenanceDto.free ? 0 : createProjectMaintenanceDto.price_maintenance,
+        countMaintenance: createProjectMaintenanceDto.countMaintenance,
+        free: createProjectMaintenanceDto.free,
+      });
+
+      return project;
     } catch (error) {
       console.log('🔴 ~ file: project.service.ts ~ line 116 ~ ProjectService ~ create ~ error', error)
     }
@@ -532,11 +543,20 @@ export class ProjectService {
   findOne(id: number) {
     return this.projectRepository.findOne({
       where: { id },
-      relations: ['projectStaff', 'projectStaff.staff'],
+      relations: ['projectStaff', 'projectStaff.staff', 'historyMaintenance'],
     })
   }
   update(id: number, updateProjectDto: UpdateProjectDto) {
     return this.projectRepository.update(id, updateProjectDto)
+  }
+  async updateHistoryMaintenance(historyMaintenanceId: number, data: any) {
+    return this.historyMaintenanceRepository.update(historyMaintenanceId, {
+      timeStart: data.timeStart,
+      timeEnd: data.timeEnd,
+      price: data.free == 'true' || data.free === true ? 0 : data.price_maintenance,
+      countMaintenance: data.countMaintenance,
+      free: data.free == 'true' || data.free === true,
+    });
   }
   async updateStatusProject(id: number) {
     return await this.projectRepository.update(id, { status: 1 })

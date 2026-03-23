@@ -96,6 +96,55 @@
               </select>
             </div>
           </div>
+
+          <% 
+            let activeHistory = null;
+            const toDay = new Date();
+            if (project.historyMaintenance && project.historyMaintenance.length > 0) {
+              activeHistory = project.historyMaintenance.find(h => new Date(h.timeStart) <= toDay && new Date(h.timeEnd) >= toDay);
+              if (!activeHistory) activeHistory = project.historyMaintenance[0];
+            }
+          %>
+          <h5 class="mt-4 mb-3">Thông tin gia hạn bảo trì (Bắt buộc)</h5>
+          <div class="row">
+            <div class="form-group col-4 mb-3" id="fee-group">
+              <label for="feeSelect" class="form-label">Loại phí:</label>
+              <select name="free" id="feeSelect" class="form-control">
+                <option value="true" <%= activeHistory && activeHistory.free ? 'selected' : '' %>>Miễn phí</option>
+                <option value="false" <%= activeHistory && !activeHistory.free ? 'selected' : '' %>>Mất phí</option>
+              </select>
+            </div>
+            <div class="form-group col-4 mb-3" id="price-group" style="<%= activeHistory && activeHistory.free ? 'display: none;' : '' %>">
+              <label class="form-label">Phí bảo trì:</label>
+              <input type="text" class="form-control" value="<%= activeHistory ? new Intl.NumberFormat('vi-VN').format(activeHistory.price) : '0' %>" onkeyup="formatCurrencyMaintenance(this)">
+              <input type="hidden" id="price_m_value" name="price_maintenance" value="<%= activeHistory ? activeHistory.price : 0 %>">
+              <script>
+                function formatCurrencyMaintenance(input) {
+                  let value = input.value.replace(/\D/g, '');
+                  input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                  document.getElementById('price_m_value').value = value;
+                }
+              </script>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-4">
+              <label for="date-time">Thời gian bắt đầu <span style="color: red">*</span>:</label>
+              <input type="date" class="form-control" name="timeStart" required value="<%= activeHistory ? new Date(activeHistory.timeStart).toISOString().split('T')[0] : '' %>">
+            </div>
+            <div class="form-group col-4">
+              <label for="date-time">Thời gian kết thúc <span style="color: red">*</span>:</label>
+              <input type="date" class="form-control" name="timeEnd" required value="<%= activeHistory ? new Date(activeHistory.timeEnd).toISOString().split('T')[0] : '' %>">
+            </div>
+            <div class="form-group col-4">
+              <label for="date-time">Số lần bảo trì <span style="color: red">*</span>:</label>
+              <input type="number" class="form-control" name="countMaintenance" required min="1" value="<%= activeHistory ? activeHistory.countMaintenance : '' %>">
+              <% if(activeHistory) { %>
+                <input type="hidden" name="historyMaintenanceId" value="<%= activeHistory.id %>">
+              <% } %>
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="description">Ghi chú</label>
             <textarea id="description" name="description" class="form-control"
