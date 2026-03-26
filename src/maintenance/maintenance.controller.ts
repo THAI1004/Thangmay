@@ -66,7 +66,7 @@ export class MaintenanceController {
       var today = new Date()
       const payload = await this.staffsService.payload(token)
       const Project = await this.projectService.findOne(+project)
-      const historyMaintenance = await this.historyMaintenanceService.findOneCanCreateMaintance(today, +Project.id, 1)
+      const historyMaintenance = await this.historyMaintenanceService.findOneCanCreateMaintance(today, +Project.id)
       const maintenance = await this.maintenanceService.create2(
         {
           project: Project,
@@ -183,18 +183,27 @@ export class MaintenanceController {
     return {historyMaintenance, staffs, project, maintenanceWProjects, activeMenu: 'maintenance'}
   }
   @Post('project/:idProject')
-  @Render('admin/maintenance/maintenance_w_project')
   async addMaintenance (@Param('idProject') idProject: string, @Res() res: Response, @Body() body: any, @Req() req) {
     try {
       const Project = await this.projectService.findOne(+idProject)
-      const {timeMaintenance, reason} = body
+      let {timeMaintenance, reason} = body
+      if (!timeMaintenance) {
+        req.flash('error', 'Vui lòng thêm ít nhất một lịch bảo trì')
+        return res.redirect('back')
+      }
+      if (!Array.isArray(timeMaintenance)) {
+        timeMaintenance = [timeMaintenance]
+      }
+      if (!Array.isArray(reason)) {
+        reason = [reason]
+      }
       body.fee = String(body.fee) === '1' ? true : false
       let createdCount = 0
+      let failedCount = 0
       for (let i = 0; i < timeMaintenance.length; i++) {
         const historyMaintenance = await this.historyMaintenanceService.findOneCanCreateMaintance(
           timeMaintenance[i],
-          +idProject,
-          timeMaintenance.length,
+          +idProject
         )
         if (historyMaintenance) {
           await this.maintenanceService.create({
@@ -205,13 +214,19 @@ export class MaintenanceController {
             historyMaintenance,
           })
           createdCount++
+        } else {
+          failedCount++
         }
       }
       if (createdCount > 0) {
-        req.flash('success', `Đã thêm ${createdCount} lịch bảo trì thành công`)
+        let msg = `Đã thêm ${createdCount} lịch bảo trì thành công.`
+        if (failedCount > 0) {
+          msg += ` Tuy nhiên có ${failedCount} lịch bị từ chối do vượt quá số lần cho phép của hợp đồng hoặc nằm ngoài ngày gia hạn hợp đồng.`
+        }
+        req.flash('success', msg)
         return res.redirect('back')
       } else {
-        req.flash('error', 'Đã xảy ra lỗi: Hãy chắc chắn ngày bảo trì có trong khoảng thời gian bảo trì')
+        req.flash('error', 'Đã xảy ra lỗi: Không tìm thấy hợp đồng nào phù hợp (có thể đã dùng hết số lần bảo trì, hoặc ngày bị chọn nằm ngoài thời hạn hợp đồng).')
         return res.redirect('back')
       }
     } catch (error) {

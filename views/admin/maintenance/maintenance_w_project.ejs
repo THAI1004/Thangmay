@@ -71,10 +71,11 @@ seconds=String(date.getSeconds()).padStart(2, '0' ); return `${day}/${month}/${y
           <option value="0">Miễn phí</option>
         </select>
       </div>
-       <div>
-        <label for="baoTri">Tạo bảo trì hàng loạt</label>
-        <div style="display: flex">
-          <input type="date" id="baoTri" class="form-control" /><input id="month" type="number" class="form-control" />
+      <div class="mb-3">
+        <label for="baoTri">Tạo bảo trì hàng loạt (Tính từ hôm nay)</label>
+        <div style="display: flex; gap: 10px">
+          <input type="date" id="baoTri" class="form-control" title="Chọn ngày kết thúc đợt bảo trì" />
+          <input id="month" type="number" class="form-control" placeholder="Chu kỳ (số tháng)" title="Khoảng cách giữa các lần bảo trì (số tháng)" />
         </div>
       </div>
       <div>
@@ -108,6 +109,16 @@ seconds=String(date.getSeconds()).padStart(2, '0' ); return `${day}/${month}/${y
             </tr>
           </thead>
           <tbody class="list">
+            <% if (maintenanceWProjects.length === 0) { %>
+            <tr style="display: none;">
+              <td class="noidung"></td>
+              <td class="thoigian"></td>
+              <td class="thoigianthucte"></td>
+              <td class="nhanvien"></td>
+              <td class="action"></td>
+              <td class="loai"></td>
+            </tr>
+            <% } %>
             <% maintenanceWProjects.forEach(function(item,index) { %>
             <tr>
               <td class="noidung"><%=item.reason%></td>
@@ -447,30 +458,47 @@ seconds=String(date.getSeconds()).padStart(2, '0' ); return `${day}/${month}/${y
     const baoTriInput = document.getElementById('baoTri')
     const monthInput = document.getElementById('month')
     const resultDiv = document.getElementById('result')
-    baoTriInput.addEventListener('change', renderInputs)
-    monthInput.addEventListener('input', renderInputs)
+
+    if (baoTriInput) baoTriInput.addEventListener('change', renderInputs)
+    if (monthInput) monthInput.addEventListener('input', renderInputs)
+
+    // Chống submit form khi nhấn Enter lúc đang gõ số
+    const inputs = [baoTriInput, monthInput];
+    inputs.forEach(el => {
+      if (el) {
+        el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            renderInputs();
+          }
+        });
+      }
+    });
 
     function renderInputs() {
+      if (!baoTriInput || !monthInput) return;
       const today = new Date()
+      today.setHours(0, 0, 0, 0)
       const endDate = new Date(baoTriInput.value)
       const monthInterval = parseInt(monthInput.value)
-      if (isNaN(monthInterval) || !baoTriInput.value || endDate <= today) {
+
+      if (isNaN(monthInterval) || monthInterval <= 0 || !baoTriInput.value || endDate <= today) {
         resultDiv.innerHTML = ''
         return
       }
+
       const resultHtml = []
       let currentDate = new Date(today)
-      while (currentDate < endDate) {
-        currentDate.setMonth(currentDate.getMonth() + monthInterval)
-        if (currentDate <= endDate) {
-          resultHtml.push(`<div class="input-group" style="margin-bottom: 2px;"> <input type="date" class="form-control" name="timeMaintenance[]" value="${currentDate
-              .toISOString()
-              .slice(
-                0,
-                10,
-              )}"><input type="text" value="Bảo trì định kì" name="reason[]" class="form-control" >
+      currentDate.setMonth(currentDate.getMonth() + monthInterval)
+
+      while (currentDate <= endDate) {
+        const localDate = new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000))
+        const dateString = localDate.toISOString().slice(0, 10);
+
+        resultHtml.push(`<div class="input-group" style="margin-bottom: 2px;"> <input type="date" class="form-control" name="timeMaintenance[]" value="${dateString}"><input type="text" value="Bảo trì định kì" name="reason[]" class="form-control" >
    <span class="remove-btn btn btn-danger" onclick="removeInput(this)">x</span></div> `)
-        }
+
+        currentDate.setMonth(currentDate.getMonth() + monthInterval)
       }
       resultDiv.innerHTML = resultHtml.join('')
     }

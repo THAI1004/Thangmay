@@ -31,13 +31,12 @@ export class HistoryMaintenanceService {
       },
     })
   }
-  async findOneCanCreateMaintance (date: Date, idProject: number, numberCreate: number) {
+  async findOneCanCreateMaintance (date: Date, idProject: number) {
     const isHistory = await this.historyMaintenance.find({
       where: {
         project: {id: idProject},
         timeStart: LessThanOrEqual(date),
         timeEnd: MoreThanOrEqual(date),
-        countMaintenance: MoreThanOrEqual(numberCreate),
       },
       relations: ['project', 'maintenance'],
       order: {
