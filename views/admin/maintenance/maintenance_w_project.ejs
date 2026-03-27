@@ -47,17 +47,29 @@ seconds=String(date.getSeconds()).padStart(2, '0' ); return `${day}/${month}/${y
                 function toDateOnly(date) {
                    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
                 }
+                function toYMD(dateString) {
+                   const d = new Date(dateString);
+                   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                }
                 const now =toDateOnly(  new Date());
                 const startDate = toDateOnly( new Date(historyMaintenance[0].timeStart));
                 const endDate = toDateOnly( new Date(historyMaintenance[0].timeEnd));
                 if (now >= startDate && now <= endDate) { %>
-          <p style="font-size: 16px; align-items: center; cursor: pointer; padding-top: 10px;" class="badge rounded badge-subtle-success false">Bảo trì:
+          <p style="font-size: 16px; align-items: center; cursor: pointer; padding-top: 10px;" class="badge rounded badge-subtle-success false" onclick="toggleMaintenanceEditStyle()">Bảo trì:
             <%= formatDate(historyMaintenance[0].timeStart) %> - <%= formatDate(historyMaintenance[0].timeEnd) %>
           </p>
           <% } else { %>
           <p style="font-size: 16px; align-items: center; cursor: pointer; padding-top: 10px;" class="badge rounded badge-subtle-danger false" id="extension-maintenance">Bảo trì: Gia hạn bảo trì</p>
-          <% }
-              } %>
+          <span style="font-size: 14px; cursor: pointer; margin-top: 5px;" class="badge rounded badge-subtle-warning false" onclick="toggleMaintenanceEditStyle()">✏️ Sửa Lịch Sử (<%= formatDate(historyMaintenance[0].timeStart) %> - <%= formatDate(historyMaintenance[0].timeEnd) %>)</span>
+          <% } %>
+          <div id="edit-maintenanceForm" style="display: none; margin-top: 10px;">
+            <form action="/history-maintenance/edit/<%= historyMaintenance[0].id %>" class="d-flex" method="post">
+              <input class="form-control" type="date" name="timeStart" value="<%= toYMD(historyMaintenance[0].timeStart) %>" required>
+              <input class="form-control mx-2" type="date" name="timeEnd" value="<%= toYMD(historyMaintenance[0].timeEnd) %>" required>
+              <button class="btn btn-primary" type="submit">Cập nhật</button>
+            </form>
+          </div>
+          <% } %>
         </div>
       </div>
     </div>
@@ -545,6 +557,17 @@ seconds=String(date.getSeconds()).padStart(2, '0' ); return `${day}/${month}/${y
       warrantyDiv.style.display = 'block'
     } else {
       warrantyDiv.style.display = 'none'
+    }
+  }
+
+  function toggleMaintenanceEditStyle() {
+    const editDiv = document.getElementById('edit-maintenanceForm')
+    if (editDiv) {
+      if (editDiv.style.display === 'none') {
+        editDiv.style.display = 'block'
+      } else {
+        editDiv.style.display = 'none'
+      }
     }
   }
 

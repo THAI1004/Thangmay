@@ -70,6 +70,10 @@ export class HistoryMaintenanceService {
     })
   }
 
+  async update(id: number, updateHistoryMaintenanceDto: any) {
+    return this.historyMaintenance.update(id, updateHistoryMaintenanceDto);
+  }
+
   async remove (id: number) {
     const maintenances = await this.maintenance.find({
       where: { historyMaintenance: { id: id } }

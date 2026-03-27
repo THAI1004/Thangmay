@@ -27,6 +27,15 @@ export class HistoryMaintenanceController {
     return {listHistory, project, activeMenu: 'historyMaintaenance/list'}
   }
 
+  @Post('edit/:id')
+  async edit(@Param('id') id: string, @Body() body: any, @Res() res: Response) {
+      await this.historyMaintenanceService.update(+id, {
+          timeStart: body.timeStart,
+          timeEnd: body.timeEnd
+      });
+      res.redirect('back');
+  }
+
   @Delete(':id')
   async remove(@Param('id') id: string, @Res() res: Response) {
     try {
