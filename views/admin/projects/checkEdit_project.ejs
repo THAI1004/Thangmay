@@ -50,10 +50,10 @@
                 </tr>
               </thead>
                  <%
-                  let infor_product=project.infor_product;
-                  <!-- if (project.infor_product) {
-                      infor_product = JSON.parse(project.infor_product);
-                  } -->
+                  let infor_product = project.infor_product;
+                  if (project.infor_product && typeof project.infor_product === 'string') {
+                      try { infor_product = JSON.parse(project.infor_product); } catch(e) {}
+                  }
                   %>
               <tbody>
                 <tr>
@@ -162,43 +162,43 @@ if (projectEdit.infor_product) {
           <tbody>
             <tr>
               <td><label for="dongCo">Động cơ</label></td>
-              <td><input readonly type="text" id="dongCo2" value="<%= infor_product2.dongCo %>" class="form-control"></td>
+              <td><input readonly type="text" id="dongCo2" value="<%= infor_product2?.dongCo %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="tuDien">Tủ điện</label></td>
-              <td><input readonly type="text" id="tuDien2" value="<%= infor_product2.tuDien %>" class="form-control"></td>
+              <td><input readonly type="text" id="tuDien2" value="<%= infor_product2?.tuDien %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="capTai">Cáp Tải</label></td>
-              <td><input readonly type="text" id="capTai2" value="<%= infor_product2.capTai %>" class="form-control"></td>
+              <td><input readonly type="text" id="capTai2" value="<%= infor_product2?.capTai %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="congSuat">Công suất</label></td>
-              <td><input readonly type="text" id="congSuat2" value="<%= infor_product2.congSuat %>" class="form-control"></td>
+              <td><input readonly type="text" id="congSuat2" value="<%= infor_product2?.congSuat %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="hoThang">Hố thang</label></td>
-              <td><input readonly type="text" id="hoThang2" value="<%= infor_product2.hoThang %>" class="form-control"></td>
+              <td><input readonly type="text" id="hoThang2" value="<%= infor_product2?.hoThang %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="cabin">Cabin</label></td>
-              <td><input readonly type="text" id="cabin2" value="<%= infor_product2.cabin %>" class="form-control"></td>
+              <td><input readonly type="text" id="cabin2" value="<%= infor_product2?.cabin %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="cua">Cửa</label></td>
-              <td><input readonly type="text" id="cua2" value="<%= infor_product2.cua %>" class="form-control"></td>
+              <td><input readonly type="text" id="cua2" value="<%= infor_product2?.cua %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="pit">Pít</label></td>
-              <td><input readonly type="text" id="pit2" value="<%= infor_product2.pit %>" class="form-control"></td>
+              <td><input readonly type="text" id="pit2" value="<%= infor_product2?.pit %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="oh">OH</label></td>
-              <td><input readonly type="text" id="oh2" value="<%= infor_product2.oh %>" class="form-control"></td>
+              <td><input readonly type="text" id="oh2" value="<%= infor_product2?.oh %>" class="form-control"></td>
             </tr>
             <tr>
               <td><label for="phongMay">Phòng máy</label></td>
-              <td><input readonly type="text" id="phongMay2" value="<%= infor_product2.phongMay %>" class="form-control"></td>
+              <td><input readonly type="text" id="phongMay2" value="<%= infor_product2?.phongMay %>" class="form-control"></td>
             </tr>
           </tbody>
         </table>

@@ -13,6 +13,7 @@ export class GlobalVariablesMiddleware implements NestMiddleware {
   ) {}
 
   async use (req: Request, res: Response, next: NextFunction) {
+    res.locals.activeMenu = ''; // Default for EJS views
     if (req.path === '/login') {
       return next()
     }

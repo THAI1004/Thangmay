@@ -52,6 +52,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         if (typeof responseBody === 'object' && 'message' in responseBody) {
           validationErrors = (responseBody as any)['message']
         }
+        try {
+          require('fs').appendFileSync('debug_400_errors.log', new Date().toISOString() + ' | URL: ' + request.url + ' | ERRORS: ' + JSON.stringify(validationErrors) + '\n');
+        } catch (e) {}
       } else if (exception instanceof InternalServerErrorException) {
         message = 'Internal server error'
         error = 'Internal Server Error'

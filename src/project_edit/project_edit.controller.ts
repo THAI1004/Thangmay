@@ -13,6 +13,11 @@ export class ProjectEditController {
     private readonly staffsService: StaffsService,
     private readonly projectService: ProjectService,
   ) {}
+  @Post('/delete/:idProjectEdit')
+  async deleteProjectEdit (@Param('idProjectEdit') idProjectEdit: number) {
+    return await this.projectEditService.remove(idProjectEdit)
+  }
+
   @Post('/:idProject')
   async create (
     @Param('idProject') idProject: number,
@@ -49,9 +54,5 @@ export class ProjectEditController {
     } else {
       res.redirect('/login')
     }
-  }
-  @Post('/delete/:idProjectEdit')
-  async deleteProjectEdit (@Param('idProjectEdit') idProjectEdit: number) {
-    return await this.projectEditService.remove(idProjectEdit)
   }
 }

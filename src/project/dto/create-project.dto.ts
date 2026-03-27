@@ -10,7 +10,7 @@ export class CreateProjectDto {
   @IsPhoneNumber('VN', {message: 'Số điện thoại không hợp lệ'})
   number_phone: string
   @IsNotEmpty({message: 'Giá đầy đủ không được để trống'})
-  @Transform(({value}) => parseFloat(value))
+  @Transform(({value}) => (value === '' || value == null) ? undefined : parseFloat(value))
   @IsNumber({}, {message: 'Giá phải là số'})
   price?: number
   @IsNotEmpty({message: 'Thuế đầy đủ không được để trống'})

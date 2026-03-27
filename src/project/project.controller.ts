@@ -229,7 +229,7 @@ export class ProjectController {
     const arr = createProjectDto.staffMain
     const hasPermissionProject = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
     const hasPermissionMaintenance = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
-    const isAdmin = inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermissionProject || hasPermissionMaintenance;
+    const isAdmin = inforAccount.role_admin || (inforAccount.department?.id == 1 && inforAccount.position?.id == 1) || hasPermissionProject || hasPermissionMaintenance;
     if (isAdmin) {
       if (arr != null && arr.length > 0) {
         const count = arr.reduce((acc, num) => {
@@ -333,7 +333,7 @@ export class ProjectController {
     
     const hasPermissionProject = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
     const hasPermissionMaintenance = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
-    const isAdmin = inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermissionProject || hasPermissionMaintenance;
+    const isAdmin = inforAccount.role_admin || (inforAccount.department?.id == 1 && inforAccount.position?.id == 1) || hasPermissionProject || hasPermissionMaintenance;
 
     if (isAdmin) {
       if (arr != null && arr.length > 0) {
@@ -544,7 +544,7 @@ export class ProjectController {
     if (inforAccount.role_admin) {
       staffs = await this.staffsService.findAll()
     } else {
-      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department.id)
+      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department?.id)
     }
     return {
       departments,
@@ -576,7 +576,7 @@ export class ProjectController {
       status2 = 0
     }
     const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_PROJECTS');
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
+    if (inforAccount.role_admin || (inforAccount.department?.id == 1 && inforAccount.position?.id == 1) || hasPermission) {
       projects = await this.projectService.findAllStatus(status2)
     } else {
       projects = await this.projectService.findByStaffId(inforAccount.id, status2)
@@ -594,7 +594,7 @@ export class ProjectController {
     const inforAccount = await this.staffsService.findOne(payload.id)
     let projects = null
     const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
+    if (inforAccount.role_admin || (inforAccount.department?.id == 1 && inforAccount.position?.id == 1) || hasPermission) {
       projects = await this.projectService.findAllProjectsMaintennce()
     } else {
       projects = await this.projectService.findProjectsMaintennceByStaffId(inforAccount.id)
@@ -614,7 +614,7 @@ export class ProjectController {
     const inforAccount = await this.staffsService.findOne(payload.id)
     let projects = null
     const hasPermission = inforAccount.permisions && inforAccount.permisions.some((p) => p.code === 'MANAGE_MAINTENANCE');
-    if (inforAccount.role_admin || (inforAccount.department.id == 1 && inforAccount.position.id == 1) || hasPermission) {
+    if (inforAccount.role_admin || (inforAccount.department?.id == 1 && inforAccount.position?.id == 1) || hasPermission) {
       projects = await this.projectService.findAllProjectsMaintenanceFree()
     } else {
       projects = await this.projectService.findProjectsMaintenanceFreeByStaffId(inforAccount.id)
@@ -650,10 +650,10 @@ export class ProjectController {
     if (inforAccount.role_admin) {
       staffs = await this.staffsService.findAll()
     } else {
-      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department.id)
+      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department?.id)
     }
     return {
-      departmentCanPick: inforAccount.department.id,
+      departmentCanPick: inforAccount.department?.id,
       departments,
       project,
       staffs,
@@ -673,13 +673,13 @@ export class ProjectController {
     if (inforAccount.role_admin) {
       staffs = await this.staffsService.findAll()
     } else {
-      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department.id)
+      staffs = await this.staffsService.findStaffsByDepartment(inforAccount.department?.id)
     }
     const workflows = await this.workflowsService.findAll()
     const steps = await this.stepsService.findAll()
     const ProjectSteps = await this.projectStepsService.findProject(id)
     return {
-      departmentCanPick: inforAccount.department.id,
+      departmentCanPick: inforAccount.department?.id,
       departments,
       project,
       ProjectSteps,
@@ -709,12 +709,21 @@ export class ProjectController {
     res.redirect('back')
   }
   @Get('/checkEdit/:projectEdit')
-  @Render('admin/projects/checkEdit_project')
-  async checkEdit(@Param('projectEdit') projectEditId: number) {
-    const projectEdit = await this.projectEditService.findOne(+projectEditId)
+  async checkEdit(@Param('projectEdit') projectEditId: string, @Res() res: Response) {
+    const id = parseInt(projectEditId, 10);
+    if (isNaN(id)) {
+      return res.redirect('back');
+    }
+    const projectEdit = await this.projectEditService.findOne(id)
+    if (!projectEdit || !projectEdit.project) {
+      return res.redirect('back');
+    }
     
     const project = await this.projectService.findOne(+projectEdit.project.id)
+    if (!project) {
+      return res.redirect('back');
+    }
     
-    return { projectEdit, project}
+    return res.render('admin/projects/checkEdit_project', { projectEdit, project });
   }
 }
